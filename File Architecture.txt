@@ -1,0 +1,25 @@
+project/
+│
+├── app.py                  # App factory / entry point
+├── config.py               # App config & secrets
+│
+├── database/
+│   ├── __init__.py
+│   └── db.py               # get_db()
+│
+├── services/
+│   ├── __init__.py
+│   ├── llm_service.py      # Question generation logic
+│   ├── evaluation.py       # Scoring & similarity logic
+│
+├── routes/
+│   ├── __init__.py
+│   ├── auth.py             # login, signup, logout
+│   ├── companies.py        # companies & rounds
+│   ├── exam.py             # exam flow
+│   ├── profile.py          # profile & scores
+│   └── misc.py             # downloads, run_code
+│
+├── templates/
+├── static/
+└── reports/

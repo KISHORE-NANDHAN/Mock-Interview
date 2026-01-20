@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ round_name }}</title>
+<style>
+body {
+    font-family: Arial;
+    background: #020617;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.card {
+    background: #1e293b;
+    padding: 40px;
+    border-radius: 15px;
+    width: 420px;
+    text-align: center;
+}
+button {
+    margin-top: 20px;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    background: #facc15;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>{{ company }}</h2>
+    <h3>{{ round_name }}</h3>
+
+    <p>This is a common round template.</p>
+
+    <!-- future: MCQ / Coding / Interview logic -->
+    <button disabled>Exam Starts Soon</button>
+</div>
+
+</body>
+</html>

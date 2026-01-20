@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ company }} - {{ round_name }}</title>
+
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+*{box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#0f172a;
+}
+
+/* MAIN CARD */
+.card{
+    width:900px;
+    padding:35px;
+    border-radius:22px;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(15px);
+    box-shadow:0 25px 50px rgba(0,0,0,.15);
+    animation:fade .5s ease;
+}
+
+@keyframes fade{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+h2{
+    text-align:center;
+    margin-bottom:15px;
+}
+h2 span{color:#3f51b5}
+
+/* HR AI HEADER */
+.hr-ai{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.hr-avatar{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#3f51b5,#6366f1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    color:white;
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(63,81,181,.5)}
+    70%{box-shadow:0 0 0 18px rgba(63,81,181,0)}
+    100%{box-shadow:0 0 0 0 rgba(63,81,181,0)}
+}
+
+.hr-text{
+    font-size:18px;
+    color:#334155;
+}
+
+/* PROGRESS BAR */
+.progress{
+    height:8px;
+    background:#e5e7eb;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:25px;
+}
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#3f51b5,#6366f1);
+    transition:width .4s ease;
+}
+
+/* QUESTION */
+.question-box{
+    background:#eef2ff;
+    padding:22px;
+    border-radius:16px;
+    font-size:18px;
+    border-left:6px solid #3f51b5;
+}
+
+/* LISTENING */
+.listening{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:15px;
+    color:#f59e0b;
+    font-weight:600;
+}
+
+.wave span{
+    display:inline-block;
+    width:4px;
+    height:16px;
+    background:#f59e0b;
+    margin:0 2px;
+    animation:wave 1s infinite;
+}
+.wave span:nth-child(2){animation-delay:.1s}
+.wave span:nth-child(3){animation-delay:.2s}
+.wave span:nth-child(4){animation-delay:.3s}
+
+@keyframes wave{
+    0%,100%{height:8px}
+    50%{height:22px}
+}
+
+/* TIMER */
+.timer{
+    margin-top:10px;
+    font-weight:600;
+    color:#3f51b5;
+}
+
+/* BUTTONS */
+.actions{
+    display:flex;
+    justify-content:space-between;
+    margin-top:25px;
+}
+
+button{
+    padding:12px 28px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.start-btn{
+    width:100%;
+    background:linear-gradient(135deg,#22c55e,#4ade80);
+    color:#052e16;
+}
+
+.next-btn{
+    background:linear-gradient(135deg,#3f51b5,#6366f1);
+    color:white;
+}
+
+.submit-btn{
+    background:linear-gradient(135deg,#f97316,#fb923c);
+    color:white;
+}
+
+textarea{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>{{ company }} <span>– {{ round_name }}</span></h2>
+
+<div class="hr-ai">
+    <div class="hr-avatar"><i class="fa-solid fa-user-tie"></i></div>
+    <div class="hr-text">
+        Welcome! I am your HR interviewer.  
+        Answer naturally and confidently.
+    </div>
+</div>
+
+<div class="progress">
+    <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<form method="POST" id="hrForm">
+
+{% for q in questions %}
+<textarea name="answer_{{ loop.index0 }}" id="answer_{{ loop.index0 }}"></textarea>
+{% endfor %}
+
+<div id="startBox">
+    <button type="button" class="start-btn" onclick="startRound()">
+        ▶ Start HR Interview
+    </button>
+</div>
+
+<div id="questionSection" style="display:none;">
+
+    <div id="questionBox" class="question-box"></div>
+
+    <div class="listening">
+        <i class="fa fa-microphone"></i>
+        <div class="wave">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        Listening…
+    </div>
+
+    <div class="timer" id="timer"></div>
+
+    <div class="actions">
+        <button type="button" class="next-btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button type="button" class="submit-btn" id="submitBtn" onclick="submitForm()" style="display:none;">Submit</button>
+    </div>
+
+</div>
+
+</form>
+</div>
+
+<script>
+const questions = {{ questions | tojson }};
+let currentQ=0;
+let countdown;
+
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+const recognition=new SpeechRecognition();
+recognition.lang="en-US";
+recognition.continuous=false;
+
+function speak(text){
+ speechSynthesis.cancel();
+ speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function startRound(){
+ startBox.style.display="none";
+ questionSection.style.display="block";
+ loadQuestion();
+}
+
+function loadQuestion(){
+ questionBox.innerText=`Q${currentQ+1}. ${questions[currentQ]}`;
+ updateProgress();
+
+ if(currentQ===questions.length-1){
+  nextBtn.style.display="none";
+  submitBtn.style.display="inline-block";
+ }else{
+  nextBtn.style.display="inline-block";
+  submitBtn.style.display="none";
+ }
+
+ speak(questions[currentQ]);
+ startRecording();
+}
+
+function updateProgress(){
+ progressFill.style.width=((currentQ)/questions.length)*100+"%";
+}
+
+function startRecording(){
+ let transcript="";
+ recognition.start();
+
+ recognition.onresult=e=>{
+  transcript+=e.results[0][0].transcript+" ";
+  document.getElementById("answer_"+currentQ).value=transcript.trim();
+ };
+
+ let t=30;
+ timer.innerText=`⏱ ${t}s`;
+ countdown=setInterval(()=>{
+  t--;
+  timer.innerText=`⏱ ${t}s`;
+  if(t<=0){
+   clearInterval(countdown);
+   recognition.stop();
+  }
+ },1000);
+}
+
+function nextQuestion(){
+ clearInterval(countdown);
+ recognition.stop();
+ speechSynthesis.cancel();
+ currentQ++;
+ loadQuestion();
+}
+
+function submitForm(){
+ clearInterval(countdown);
+ recognition.stop();
+ speechSynthesis.cancel();
+ progressFill.style.width="100%";
+ document.getElementById("hrForm").submit();
+}
+</script>
+
+</body>
+</html>

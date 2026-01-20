@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Profile & Interview Analytics</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0f2fe, #fce7f3);
+    padding: 40px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* BACK */
+.back-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fb7185, #f43f5e);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+/* PROFILE */
+.profile-card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.info h2 {
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+.info p {
+    margin: 6px 0;
+    color: #334155;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+th {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 12px;
+}
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+tr:hover {
+    background: rgba(99,102,241,0.08);
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.good { background: #dcfce7; color: #166534; }
+.avg { background: #fef3c7; color: #92400e; }
+.bad { background: #fee2e2; color: #991b1b; }
+
+/* INSIGHT */
+.insight {
+    margin-top: 15px;
+    padding: 15px;
+    border-left: 5px solid #ef4444;
+    background: #fff7ed;
+    border-radius: 10px;
+    font-weight: 500;
+    color: #7c2d12;
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<a href="{{ url_for('companies.companies') }}" class="back-btn">⬅ Back to Companies</a>
+
+<!-- PROFILE -->
+<div class="profile-card">
+    <div class="avatar">{{ user[1][0]|upper }}</div>
+    <div class="info">
+        <h2>{{ user[1] }}</h2>
+        <p><b>Email:</b> {{ user[2] }}</p>
+        <p><b>College:</b> {{ user[4] }}</p>
+    </div>
+</div>
+
+<div class="grid">
+
+<!-- REPORT TABLE -->
+<div class="card">
+    <h3>Interview Reports (Detailed Analysis)</h3>
+
+    <table>
+        <tr>
+            <th>Round</th>
+            <th>Score</th>
+            <th>Max</th>
+            <th>Level</th>
+        </tr>
+
+        {% for s in scores %}
+        {% set r = s[1]|lower %}
+
+        {% if r.startswith('mcq') %}
+            {% set max_marks = 15 %}
+        {% elif 'coding' in r %}
+            {% set max_marks = 30 %}
+        {% else %}
+            {% set max_marks = 100 %}
+        {% endif %}
+
+        {% set percent = (s[2] / max_marks) * 100 %}
+
+        <tr>
+            <td>{{ s[1] }}</td>
+            <td><b>{{ s[2] }}</b></td>
+            <td>{{ max_marks }}</td>
+            <td>
+                {% if percent < 50 %}
+                    <span class="badge bad">Needs Improvement</span>
+                {% elif percent < 75 %}
+                    <span class="badge avg">Average</span>
+                {% else %}
+                    <span class="badge good">Strong</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- GRAPH 1 -->
+<div class="card">
+    <h3>Round-wise Score Percentage</h3>
+    <canvas id="barChart"></canvas>
+</div>
+
+<!-- GRAPH 2 -->
+<div class="card">
+    <h3>Overall Interview Skill Balance</h3>
+    <canvas id="radarChart"></canvas>
+</div>
+
+</div>
+</div>
+
+<script>
+const labels = [
+{% for s in scores %}
+"{{ s[1] }}",
+{% endfor %}
+];
+
+const percentages = [
+{% for s in scores %}
+{% set r = s[1]|lower %}
+{% if r.startswith('mcq') %}
+{{ (s[2] / 15 * 100) | round(2) }}
+{% elif 'coding' in r %}
+{{ (s[2] / 30 * 100) | round(2) }}
+{% else %}
+{{ (s[2] / 100 * 100) | round(2) }}
+{% endif %},
+{% endfor %}
+];
+
+// BAR CHART
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Score %',
+            data: percentages
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+
+// RADAR CHART
+new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Performance Balance',
+            data: percentages,
+            backgroundColor: 'rgba(236,72,153,0.3)',
+            borderColor: '#ec4899'
+        }]
+    },
+    options: {
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+
+// INSIGHT (IGNORE ZERO ATTEMPTS)
+const validScores = percentages.filter(p => p > 0);
+const minScore = Math.min(...validScores);
+const weakRound = labels[percentages.indexOf(minScore)];
+
+const insight = document.createElement('div');
+insight.className = 'insight';
+insight.textContent = `Weakest Round: ${weakRound} (${minScore.toFixed(2)}%)`;
+document.querySelector(".container").appendChild(insight);
+</script>
+
+</body>
+</html>

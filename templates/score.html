@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Interview Score</title>
+
+<style>
+*{box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+
+body{
+    margin:0;
+    background:linear-gradient(135deg,#0f172a,#020617);
+    color:white;
+}
+
+/* TOP NAVIGATION */
+.top-bar{
+    width:100%;
+    padding:18px 40px;
+    background:rgba(255,255,255,0.04);
+    backdrop-filter:blur(12px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.top-bar .title{
+    font-size:18px;
+    font-weight:600;
+    color:#38bdf8;
+}
+
+.top-bar a{
+    margin-left:10px;
+    padding:10px 20px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:600;
+    font-size:14px;
+    transition:0.3s;
+}
+
+.profile-btn{background:#6366f1;color:white}
+.home-btn{background:#fb7185;color:white}
+.pdf-btn{background:#22c55e;color:#022c22}
+
+.top-bar a:hover{
+    opacity:0.85;
+    transform:translateY(-1px);
+}
+
+/* MAIN CARD */
+.score-card{
+    width:100%;
+    padding:50px 40px;
+}
+
+/* HEADER */
+.company{
+    font-size:26px;
+    font-weight:700;
+    color:#e2e8f0;
+}
+.round{
+    font-size:16px;
+    color:#94a3b8;
+    margin-bottom:25px;
+}
+
+/* SCORE SECTION */
+.score-section{
+    display:flex;
+    align-items:center;
+    gap:40px;
+    margin-bottom:35px;
+}
+
+.progress{
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    background:conic-gradient(#22c55e calc(var(--percent)*1%),#111827 0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+.progress::before{
+    content:"";
+    width:130px;
+    height:130px;
+    background:#020617;
+    border-radius:50%;
+    position:absolute;
+}
+
+.score{
+    font-size:36px;
+    font-weight:700;
+    color:#4ade80;
+    position:relative;
+}
+
+.details{
+    font-size:15px;
+    line-height:1.6;
+}
+
+.details span{
+    display:block;
+    font-weight:600;
+    color:#cbd5f5;
+}
+
+/* BADGE */
+.badge{
+    padding:8px 18px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+    display:inline-block;
+}
+.good{ background:#dcfce7; color:#166534; }
+.avg{ background:#fef3c7; color:#92400e; }
+.bad{ background:#fee2e2; color:#991b1b; }
+
+/* IMPROVEMENT BOX */
+.feedback-box{
+    background:rgba(255,255,255,0.05);
+    padding:18px 20px;
+    border-radius:12px;
+}
+
+.feedback-box h4{
+    color:#38bdf8;
+    margin-bottom:12px;
+}
+
+.feedback-box ul{
+    margin:0;
+    padding-left:18px;
+    font-size:14px;
+    line-height:1.7;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+    <div class="title">Technical Interview Results</div>
+    <div>
+        <a href="/profile" class="profile-btn">📊 Profile</a>
+        <a href="/companies" class="home-btn">🏠 Companies</a>
+        <a href="/download_score_pdf" class="pdf-btn">📄 Download PDF</a>
+    </div>
+</div>
+
+<div class="score-card">
+
+    <div class="company">{{ company }}</div>
+    <div class="round">{{ round_name }}</div>
+
+    {% set safe_total = total if total > 0 else 1 %}
+    {% set percent = (score / safe_total) * 100 %}
+
+    <div class="score-section">
+        <div class="progress" style="--percent: {{ percent }}">
+            <div class="score">{{ score }}</div>
+        </div>
+
+        <div class="details">
+            <span>Total Questions: {{ total }}</span>
+            <span>Score Percentage: {{ percent|round(2) }}%</span>
+
+            {% if percent >= 75 %}
+                <div class="badge good">Excellent Performance</div>
+            {% elif percent >= 50 %}
+                <div class="badge avg">Average – Needs Improvement</div>
+            {% else %}
+                <div class="badge bad">Needs More Practice</div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if session.technical_feedback %}
+    <div class="feedback-box">
+        <h4>📌 Improvement Areas</h4>
+        <ul>
+            {% for q, data in session.technical_feedback.items() %}
+            <li>
+                <b>{{ q }}</b><br>
+                Missing Key Terms: {{ data.missing_key_terms | join(", ") }}<br>
+                Missing Key Points: {{ data.missing_key_points | join(", ") }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if session.get("violation") %}
+    <div style="color:red; font-weight:bold; margin-bottom:10px;">
+        🚫 Exam auto-submitted due to violation
+    </div>
+    {% endif %}
+
+
+</div>
+
+</body>
+</html>

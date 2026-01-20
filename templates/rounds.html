@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ company }} - Interview Rounds</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0e7ff, #fce7f3);
+}
+
+/* NAVBAR */
+.navbar {
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 18px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.navbar a:hover {
+    color: #93c5fd;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    margin: 35px 0 10px;
+}
+
+.header h2 {
+    font-size: 32px;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.header p {
+    color: #475569;
+    font-size: 15px;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+/* ROUND CARD */
+.card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    transition: 0.4s;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    opacity: 0;
+    transition: 0.4s;
+    z-index: 0;
+}
+
+.card:hover::before {
+    opacity: 0.08;
+}
+
+.card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 45px rgba(0,0,0,0.25);
+}
+
+.card * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ICON */
+.icon {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e, #4ade80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    color: white;
+    margin: auto;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* ROUND TITLE */
+.card h4 {
+    font-size: 20px;
+    color: #0f172a;
+    margin-bottom: 15px;
+}
+
+/* BUTTON */
+.card a button {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.card a button:hover {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* FOOTER SPACE */
+.footer-space {
+    height: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <a href="/companies">⬅ Back to Companies</a>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+    <h2>{{ company }}</h2>
+    <p>Select a round to begin your interview</p>
+</div>
+<div style="text-align:center; margin:10px;">
+  <label><b>Exam Mode:</b></label>
+  <select id="mode" onchange="setMode()">
+      <option value="practice">Practice Mode</option>
+      <option value="strict">Strict Mode</option>
+  </select>
+</div>
+<!-- ROUNDS -->
+<div class="container">
+{% for r in rounds %}
+    <div class="card">
+        <div class="icon">
+            {% if "Tech" in r[1] %}
+                💻
+            {% elif "HR" in r[1] %}
+                🧑‍💼
+            {% elif "Commun" in r[1] %}
+                🎤
+            {% else %}
+                📝
+            {% endif %}
+        </div>
+
+        <h4>{{ r[1] }}</h4>
+
+        <a href="/round/{{ r[0] }}">
+            <button>Start Round</button>
+        </a>
+    </div>
+{% endfor %}
+</div>
+
+<div class="footer-space"></div>
+
+</body>
+<script>
+function setMode() {
+    let mode = document.getElementById("mode").value;
+    fetch("/set_mode/" + mode);
+}
+</script>
+</html>

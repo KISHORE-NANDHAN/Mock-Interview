@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, app
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -11,6 +11,7 @@ from routes.exam import exam_bp
 from routes.profile import profile_bp
 from routes.misc import misc_bp
 from routes.pdf_export import download_bp
+from routes.proctor import proctor_bp
 
 
 
@@ -33,6 +34,7 @@ def create_app():
     )
     handler.setFormatter(formatter)
     handler.setLevel(logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
 
     logging.getLogger().addHandler(handler)
     logging.getLogger().setLevel(logging.INFO)
@@ -46,6 +48,8 @@ def create_app():
     app.register_blueprint(profile_bp)
     app.register_blueprint(misc_bp)
     app.register_blueprint(download_bp)
+    app.register_blueprint(proctor_bp)
+
     @app.route("/test_model")
     def test_model():
         from services.technical_evaluator import model

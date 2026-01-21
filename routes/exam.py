@@ -3,10 +3,11 @@ from flask import Blueprint, render_template, request, redirect, session
 import sqlite3
 import logging
 import os
-import subprocess
-import sys
+from routes.proctor import stop_proctoring
+from routes.proctor import PROCTOR_STATE
 
 logger = logging.getLogger(__name__)
+from routes.proctor import start_proctoring
 from services.llm_service import generate_questions_llm
 from services.evaluation import (
     text_similarity_score,
@@ -18,12 +19,27 @@ from services.evaluation import (
 exam_bp = Blueprint("exam", __name__)
 
 #------------------------------------------------------------------
+def dbg(msg, **data):
+    with open("exam_debug.log", "a") as f:
+        f.write(f"[EXAM DEBUG] {msg} | {data}\n")
+
+
 @exam_bp.route("/set_mode/<mode>")
 def set_mode(mode):
     session["exam_mode"] = mode
     return "OK"
 
+@exam_bp.route("/check-violation")
+def check_violation():
+    if PROCTOR_STATE["violation"]:
+        return {"violation": True}
+    return {"violation": False}
 
+
+@exam_bp.route("/stop-proctoring", methods=["POST"])
+def stop():
+    stop_proctoring()
+    return "", 204
 
 #------------------------------------------------------------------
 def get_db():
@@ -34,12 +50,19 @@ def get_db():
 
 @exam_bp.route("/exam/<int:round_id>", methods=["GET", "POST"])
 def exam(round_id):
+
+    dbg("EXAM route entered",
+        method=request.method,
+        round_id=round_id,
+        violation=PROCTOR_STATE["violation"]
+    )
+
     if "user_id" not in session:
         return redirect("/")
 
     db = get_db()
     cur = db.cursor()
-
+    
     cur.execute("""
         SELECT r.round_name, r.round_type, c.name, c.id
         FROM rounds r
@@ -48,38 +71,77 @@ def exam(round_id):
     """, (round_id,))
     round_name, round_type, company, company_id = cur.fetchone()
 
+
+    if PROCTOR_STATE["violation"] and not session.get("auto_submit_done"):
+        session["auto_submit_done"] = True
+
+        # force submit
+        score = 0
+        total = 0
+
+        cur.execute("""
+            INSERT INTO scores (
+                user_id, company_id, round_id,
+                score, max_score, last_score, avg_score, attempts
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+            ON CONFLICT(user_id, round_id)
+            DO UPDATE SET
+                last_score = score,
+                score = excluded.score,
+                attempts = attempts + 1,
+
+                avg_score = ROUND(
+                    ((avg_score * (attempts - 1)) + excluded.score) / attempts,
+                    2
+                ),
+                max_score = CASE
+                    WHEN excluded.score > max_score THEN excluded.score
+                    ELSE max_score
+                END
+        """, (
+            session["user_id"],
+            company_id,
+            round_id,
+            0,  # score
+            0,  # max_score
+            0,  # last_score
+            0   # avg_score
+        ))
+
+        stop_proctoring()
+        db.commit()
+        PROCTOR_STATE["violation"] = False
+        return redirect("/score")
+
     # ---------------- GET ----------------
     if request.method == "GET":
-        # ---------------- PROCTORING CONTROL ----------------
+        session.pop("auto_submit_done", None)
+        dbg("EXAM GET started", round_type=round_type)
         mode = session.get("exam_mode", "practice")
 
-        if mode == "strict":
-            # Avoid multiple instances
-            if not session.get("proctoring_started"):
-                subprocess.Popen(
-                    [sys.executable, "monitor.py"],
-                    stdout=sys.stdout,
-                    stderr=sys.stderr
-                )
 
-                session["proctoring_started"] = True
-                print("🔒 Strict mode: Proctoring started")
-        else:
-            print("📝 Practice mode: Proctoring OFF")
-        # -----------------------------------------------------
         questions = generate_questions_llm(round_type, company)
         if round_type == "technical":
             session["technical_questions"] = [q["question"] for q in questions]
             from flask import current_app
             current_app.config["TECH_QUESTION_CACHE"] = questions
          
-
+        if round_type == "mcq":
+            session["mcq_questions"] = questions
+        
         logger.info(
             "Generated questions | round_type=%s | company=%s | questions=%s",
             round_type,
             company,
             questions
         )
+        # ---------------- PROCTORING CONTROL ----------------
+        from routes.proctor import start_proctoring
+
+        if mode == "strict" and not PROCTOR_STATE["running"]:
+            start_proctoring()
+
         if round_type == "communication":
             return render_template(
                 "communication.html",
@@ -98,20 +160,19 @@ def exam(round_id):
     # ---------------- POST ----------------
     score = 0
     total = 0
+    dbg(
+        "EXAM POST started",
+        round_type=round_type,
+        violation=PROCTOR_STATE["violation"]
+    )
+    
+    is_forced_submit = PROCTOR_STATE["violation"] or False
+    dbg("is_forced_submit resolved", is_forced_submit=is_forced_submit)
 
-    # ---------------- VIOLATION CHECK ----------------
-    if os.path.exists("violation.flag"):
-        os.remove("violation.flag")
-        session["violation"] = True
-
-        # Stop proctoring state
-        session.pop("proctoring_started", None)
-
-        logger.warning("Exam auto-submitted due to violation")
-        return redirect("/score")
 
 
     if round_type == "mcq":
+        dbg("Evaluating MCQ round")
         questions = session.get("mcq_questions", [])
         total = len(questions)
         for i, q in enumerate(questions):
@@ -184,27 +245,38 @@ def exam(round_id):
         score = evaluate_hr(qa_pairs)["score"]
         total = 100
 
+
+    dbg(
+        "Writing score to DB",
+        score=score,
+        total=total,
+        user_id=session.get("user_id"),
+        round_id=round_id
+    )
+
     cur.execute("""
-        INSERT INTO scores (user_id, company_id, round_id, score, max_score, last_score, avg_score, attempts)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+    INSERT INTO scores (user_id, company_id, round_id, score, max_score, last_score, avg_score, attempts)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1)
 
-        ON CONFLICT(user_id, round_id)
-        DO UPDATE SET
-            last_score = scores.score,
-            score = excluded.score,
-            attempts = scores.attempts + 1,
+    ON CONFLICT(user_id, round_id)
+    DO UPDATE SET
+        last_score = score,
+        score = excluded.score,
+        attempts = attempts + 1,
 
-            avg_score = ROUND(
-                ((scores.avg_score * scores.attempts) + excluded.score) / (scores.attempts + 1),
-                2
-            ),
+        avg_score = ROUND(
+            ((avg_score * (attempts - 1)) + excluded.score) / attempts,
+            2
+        ),
 
-            max_score = CASE
-                WHEN excluded.score > scores.max_score THEN excluded.score
-                ELSE scores.max_score
-            END
+        max_score = CASE
+            WHEN excluded.score > max_score THEN excluded.score
+            ELSE max_score
+        END
+
         """, (session["user_id"], company_id, round_id, score, score, score, score))
 
+    dbg("DB commit successful")
 
 
     db.commit()
@@ -217,6 +289,18 @@ def exam(round_id):
         "last_company": company
     })
     # ---------------- CLEANUP ----------------
-    session.pop("proctoring_started", None)
+    session.pop("exam_mode", None)
+    session.pop("violation", None)
 
+    session["auto_submitted"] = is_forced_submit
+
+    dbg(
+        "Session cleaned",
+        exam_mode=session.get("exam_mode"),
+        violation=PROCTOR_STATE["violation"]
+    )
+
+
+    dbg("Redirecting to /score")
+    stop_proctoring()
     return redirect("/score")

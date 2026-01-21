@@ -25,6 +25,7 @@ body {
 .header h2 {
     margin-bottom: 6px;
     background: linear-gradient(135deg, #38bdf8, #a855f7);
+    background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
 }
@@ -127,11 +128,18 @@ button:hover {
     }
 }
 </style>
-
 <script>
-let current = 0;
+console.log("✅ MCQ page loaded");
+
+function dbg(msg, data = "") {
+    console.log("[MCQ DEBUG]", msg, data);
+}
+
+let current = 0;    
 
 function showQuestion(index) {
+    dbg("Showing question", index);
+
     const questions = document.getElementsByClassName("mcq-question");
     const progressText = document.getElementById("progressText");
     const progressFill = document.getElementById("progressFill");
@@ -148,12 +156,12 @@ function showQuestion(index) {
 
     if (index === questions.length - 1) {
         btn.innerText = "Submit Test";
-        btn.type = "submit";
+        dbg("Last question reached");
     } else {
         btn.innerText = "Next →";
-        btn.type = "button";
     }
 }
+
 
 function nextQuestion() {
     current++;
@@ -171,6 +179,25 @@ window.onload = () => showQuestion(current);
     <p>Choose the correct answer</p>
 </div>
 
+<!-------------------------------->
+
+{% if session.get("exam_mode") == "strict" %}
+<div style="
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    border: 2px solid red;
+    padding: 5px;
+    background: white;
+    z-index: 9999;
+">
+    <img src="/proctor-feed" width="240" height="180">
+    <div style="color:red; text-align:center; font-weight:bold;">
+        🔴 Proctoring Active
+    </div>
+</div>
+{% endif %}
+<!-------------------------------->
 <div class="progress-container">
     <div class="progress-text" id="progressText"></div>
     <div class="progress-bar">
@@ -195,12 +222,73 @@ window.onload = () => showQuestion(current);
     </div>
 </div>
 {% endfor %}
+{% if session.get("exam_mode") == "strict" %}
+<script>
+let submitted = false;
+dbg("Violation polling started");
+
+const violationInterval = setInterval(() => {
+    if (submitted) return;
+
+    dbg("Polling /check-violation");
+
+    fetch("/check-violation")
+        .then(res => res.json())
+        .then(data => {
+            dbg("check-violation response body", data);
+
+            if (data.violation) {
+                dbg("🚨 Violation detected → auto-submitting exam");
+
+                submitted = true;
+                clearInterval(violationInterval);
+
+                alert("🚫 Violation detected. Exam auto-submitting.");
+
+                // Stop proctoring cleanly
+                navigator.sendBeacon("/stop-proctoring");
+
+                // ✅ THIS IS THE FIX
+                document.querySelector("form").submit();
+            }
+        })
+        .catch(err => dbg("❌ check-violation failed", err));
+}, 2000);
+</script>
+
+{% endif %}
 
 <div class="action">
-    <button id="nextBtn" onclick="nextQuestion()">Next →</button>
+    <button id="nextBtn" type="button">Next →</button>
 </div>
+<script>
+const form = document.querySelector("form");
+
+form.addEventListener("submit", () => {
+    dbg("Form submitting → stopping proctoring");
+    navigator.sendBeacon("/stop-proctoring");
+    document.getElementById("nextBtn").disabled = true;
+    document.getElementById("nextBtn").innerText = "Submitting...";
+});
+</script>
+
 
 </form>
+<script>
+document.getElementById("nextBtn").addEventListener("click", function () {
+    dbg("Next/Submit button clicked", { current });
+
+    const questions = document.getElementsByClassName("mcq-question");
+
+    if (current === questions.length - 1) {
+        dbg("Manual submit triggered");
+        document.querySelector("form").submit();
+    } else {
+        nextQuestion();
+    }
+});
+</script>
+
 
 </body>
 </html>

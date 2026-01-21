@@ -198,12 +198,15 @@ body{
             {% endfor %}
         </ul>
     </div>
-    {% endif %}
-    {% if session.get("violation") %}
+    {% endif %}   {# ✅ THIS WAS MISSING #}
+
+    {% if session.get("auto_submitted") %}
     <div style="color:red; font-weight:bold; margin-bottom:10px;">
-        🚫 Exam auto-submitted due to violation
+        🚫 Exam auto-submitted due to proctoring violation
     </div>
     {% endif %}
+
+    {% set _ = session.pop("auto_submitted", None) %}
 
 
 </div>

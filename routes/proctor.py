@@ -61,12 +61,18 @@ def start_proctoring():
 
 def stop_proctoring():
     global cap
+    if not PROCTOR_STATE["running"]:
+        return
+        
     PROCTOR_STATE["running"] = False
-    time.sleep(0.2)
-
-    if cap:
-        cap.release()
-        cap = None
+    
+    # Release camera in a separate thread to prevent blocking the main request
+    def release_cam(c):
+        if c:
+            c.release()
+            
+    threading.Thread(target=release_cam, args=(cap,)).start()
+    cap = None
 
 
 def gen_frames():

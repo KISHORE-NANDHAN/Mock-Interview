@@ -266,7 +266,7 @@ const form = document.querySelector("form");
 
 form.addEventListener("submit", () => {
     dbg("Form submitting → stopping proctoring");
-    navigator.sendBeacon("/stop-proctoring");
+    // navigator.sendBeacon("/stop-proctoring");
     document.getElementById("nextBtn").disabled = true;
     document.getElementById("nextBtn").innerText = "Submitting...";
 });

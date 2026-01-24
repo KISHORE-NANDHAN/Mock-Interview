@@ -302,5 +302,8 @@ def exam(round_id):
 
 
     dbg("Redirecting to /score")
-    stop_proctoring()
+    try:
+        stop_proctoring()
+    except Exception as e:
+        dbg(f"Error stopping proctoring: {e}")
     return redirect("/score")

@@ -22,4 +22,3 @@ SpeechRecognition
 jiwer
 pydub
 numpy
-pydub

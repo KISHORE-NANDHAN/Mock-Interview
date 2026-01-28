@@ -19,9 +19,12 @@ from services.evaluation import (
 exam_bp = Blueprint("exam", __name__)
 
 #------------------------------------------------------------------
+import datetime
+
 def dbg(msg, **data):
-    with open("exam_debug.log", "a") as f:
-        f.write(f"[EXAM DEBUG] {msg} | {data}\n")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open("debug/exam_debug.log", "a") as f:
+        f.write(f"[{timestamp}] [EXAM DEBUG] {msg} | {data}\n")
 
 
 @exam_bp.route("/set_mode/<mode>")
@@ -72,47 +75,12 @@ def exam(round_id):
     round_name, round_type, company, company_id = cur.fetchone()
 
 
-    if PROCTOR_STATE["violation"] and not session.get("auto_submit_done"):
-        session["auto_submit_done"] = True
-
-        # force submit
-        score = 0
-        total = 0
-
-        cur.execute("""
-            INSERT INTO scores (
-                user_id, company_id, round_id,
-                score, max_score, last_score, avg_score, attempts
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-            ON CONFLICT(user_id, round_id)
-            DO UPDATE SET
-                last_score = score,
-                score = excluded.score,
-                attempts = attempts + 1,
-
-                avg_score = ROUND(
-                    ((avg_score * (attempts - 1)) + excluded.score) / attempts,
-                    2
-                ),
-                max_score = CASE
-                    WHEN excluded.score > max_score THEN excluded.score
-                    ELSE max_score
-                END
-        """, (
-            session["user_id"],
-            company_id,
-            round_id,
-            0,  # score
-            0,  # max_score
-            0,  # last_score
-            0   # avg_score
-        ))
-
-        stop_proctoring()
-        db.commit()
-        PROCTOR_STATE["violation"] = False
-        return redirect("/score")
+    # FIX: Don't auto-submit here - let the normal POST flow handle it
+    # The violation flag will be checked in the POST section
+    if PROCTOR_STATE["violation"] and request.method == "GET":
+        dbg("Violation detected on GET request, but allowing normal flow")
+        # Don't redirect, let the page load normally
+        # The frontend will auto-submit via JavaScript
 
     # ---------------- GET ----------------
     if request.method == "GET":
@@ -174,9 +142,29 @@ def exam(round_id):
     if round_type == "mcq":
         dbg("Evaluating MCQ round")
         questions = session.get("mcq_questions", [])
+        
+        # FIX: If questions not in session, regenerate them
+        if not questions:
+            dbg("MCQ questions not found in session, regenerating...")
+            questions = generate_questions_llm(round_type, company)
+            session["mcq_questions"] = questions
+        
         total = len(questions)
+        dbg(f"Total MCQ questions: {total}")
+        
         for i, q in enumerate(questions):
-            if request.form.get(f"q{i}") == q["correct_answer"]:
+            submitted = request.form.get(f"q{i}")
+            expected = str(q["correct_answer"])
+            
+            # Debugging the comparison
+            dbg(
+                f"Question {i+1}",
+                submitted=submitted,
+                expected=expected,
+                match=(str(submitted) == expected)
+            )
+
+            if str(submitted) == expected:
                 score += 1
             else:
                 score += 0
@@ -297,7 +285,8 @@ def exam(round_id):
     dbg(
         "Session cleaned",
         exam_mode=session.get("exam_mode"),
-        violation=PROCTOR_STATE["violation"]
+        violation=PROCTOR_STATE["violation"],
+        auto_submitted=session.get("auto_submitted")
     )
 
 

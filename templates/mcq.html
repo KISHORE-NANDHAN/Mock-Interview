@@ -1,188 +1,202 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>{{ round_name }} - {{ company }}</title>
+    <title>{{ round_name }} - {{ company }}</title>
 
-<style>
-* {
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #020617, #0f172a);
-    color: white;
-    padding: 40px 20px;
-}
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0f172a);
+            color: white;
+            padding: 40px 20px;
+        }
 
-/* HEADER */
-.header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-.header h2 {
-    margin-bottom: 6px;
-    background: linear-gradient(135deg, #38bdf8, #a855f7);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-}
-.header p {
-    opacity: 0.8;
-}
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
 
-/* PROGRESS BAR */
-.progress-container {
-    max-width: 750px;
-    margin: auto;
-}
-.progress-text {
-    text-align: center;
-    margin-bottom: 8px;
-    opacity: 0.85;
-}
-.progress-bar {
-    background: #1e293b;
-    height: 10px;
-    border-radius: 20px;
-    overflow: hidden;
-}
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(135deg, #22c55e, #4ade80);
-    transition: width 0.4s ease;
-}
+        .header h2 {
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #38bdf8, #a855f7);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
 
-/* QUESTION CARD */
-.question-box {
-    background: rgba(30,41,59,0.9);
-    backdrop-filter: blur(10px);
-    padding: 30px;
-    border-radius: 20px;
-    max-width: 750px;
-    margin: 25px auto;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
-    animation: fadeSlide 0.5s ease;
-}
+        .header p {
+            opacity: 0.8;
+        }
 
-@keyframes fadeSlide {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        /* PROGRESS BAR */
+        .progress-container {
+            max-width: 750px;
+            margin: auto;
+        }
 
-/* OPTIONS */
-.options label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    margin: 12px 0;
-    border-radius: 12px;
-    background: #020617;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: 0.25s;
-}
+        .progress-text {
+            text-align: center;
+            margin-bottom: 8px;
+            opacity: 0.85;
+        }
 
-.options label:hover {
-    background: #020617;
-    border-color: #38bdf8;
-}
+        .progress-bar {
+            background: #1e293b;
+            height: 10px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
 
-.options input {
-    accent-color: #22c55e;
-    transform: scale(1.2);
-}
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(135deg, #22c55e, #4ade80);
+            transition: width 0.4s ease;
+        }
 
-/* BUTTON */
-.action {
-    text-align: center;
-    margin-top: 25px;
-}
+        /* QUESTION CARD */
+        .question-box {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 750px;
+            margin: 25px auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            animation: fadeSlide 0.5s ease;
+        }
 
-button {
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    color: #020617;
-    background: linear-gradient(135deg, #22c55e, #4ade80);
-    box-shadow: 0 10px 30px rgba(34,197,94,0.4);
-    transition: 0.3s;
-}
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 35px rgba(34,197,94,0.55);
-}
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-/* MOBILE */
-@media(max-width: 600px) {
-    .question-box {
-        padding: 22px;
-    }
-}
-</style>
-<script>
-console.log("✅ MCQ page loaded");
+        /* OPTIONS */
+        .options label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            background: #020617;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.25s;
+        }
 
-function dbg(msg, data = "") {
-    console.log("[MCQ DEBUG]", msg, data);
-}
+        .options label:hover {
+            background: #020617;
+            border-color: #38bdf8;
+        }
 
-let current = 0;    
+        .options input {
+            accent-color: #22c55e;
+            transform: scale(1.2);
+        }
 
-function showQuestion(index) {
-    dbg("Showing question", index);
+        /* BUTTON */
+        .action {
+            text-align: center;
+            margin-top: 25px;
+        }
 
-    const questions = document.getElementsByClassName("mcq-question");
-    const progressText = document.getElementById("progressText");
-    const progressFill = document.getElementById("progressFill");
-    const btn = document.getElementById("nextBtn");
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            color: #020617;
+            background: linear-gradient(135deg, #22c55e, #4ade80);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+            transition: 0.3s;
+        }
 
-    for (let i = 0; i < questions.length; i++) {
-        questions[i].style.display = "none";
-    }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 35px rgba(34, 197, 94, 0.55);
+        }
 
-    questions[index].style.display = "block";
+        /* MOBILE */
+        @media(max-width: 600px) {
+            .question-box {
+                padding: 22px;
+            }
+        }
+    </style>
+    <script>
+        console.log("✅ MCQ page loaded");
 
-    progressText.innerText = `Question ${index + 1} of ${questions.length}`;
-    progressFill.style.width = ((index + 1) / questions.length) * 100 + "%";
+        function dbg(msg, data = "") {
+            const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
+            console.log(`[${timestamp}] [MCQ DEBUG]`, msg, data);
+        }
 
-    if (index === questions.length - 1) {
-        btn.innerText = "Submit Test";
-        dbg("Last question reached");
-    } else {
-        btn.innerText = "Next →";
-    }
-}
+        let current = 0;
+
+        function showQuestion(index) {
+            dbg("Showing question", index);
+
+            const questions = document.getElementsByClassName("mcq-question");
+            const progressText = document.getElementById("progressText");
+            const progressFill = document.getElementById("progressFill");
+            const btn = document.getElementById("nextBtn");
+
+            for (let i = 0; i < questions.length; i++) {
+                questions[i].style.display = "none";
+            }
+
+            questions[index].style.display = "block";
+
+            progressText.innerText = `Question ${index + 1} of ${questions.length}`;
+            progressFill.style.width = ((index + 1) / questions.length) * 100 + "%";
+
+            if (index === questions.length - 1) {
+                btn.innerText = "Submit Test";
+                dbg("Last question reached");
+            } else {
+                btn.innerText = "Next →";
+            }
+        }
 
 
-function nextQuestion() {
-    current++;
-    showQuestion(current);
-}
+        function nextQuestion() {
+            current++;
+            showQuestion(current);
+        }
 
-window.onload = () => showQuestion(current);
-</script>
+        window.onload = () => showQuestion(current);
+    </script>
 </head>
 
 <body>
 
-<div class="header">
-    <h2>{{ company }} – {{ round_name }}</h2>
-    <p>Choose the correct answer</p>
-</div>
+    <div class="header">
+        <h2>{{ company }} – {{ round_name }}</h2>
+        <p>Choose the correct answer</p>
+    </div>
 
-<!-------------------------------->
+    <!-------------------------------->
 
-{% if session.get("exam_mode") == "strict" %}
-<div style="
+    {% if session.get("exam_mode") == "strict" %}
+    <div style="
     position: fixed;
     top: 10px;
     right: 10px;
@@ -191,104 +205,149 @@ window.onload = () => showQuestion(current);
     background: white;
     z-index: 9999;
 ">
-    <img src="/proctor-feed" width="240" height="180">
-    <div style="color:red; text-align:center; font-weight:bold;">
-        🔴 Proctoring Active
+        <img src="/proctor-feed" width="240" height="180">
+        <div style="color:red; text-align:center; font-weight:bold;">
+            🔴 Proctoring Active
+        </div>
     </div>
-</div>
-{% endif %}
-<!-------------------------------->
-<div class="progress-container">
-    <div class="progress-text" id="progressText"></div>
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+    {% endif %}
+    <!-------------------------------->
+    <div class="progress-container">
+        <div class="progress-text" id="progressText"></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
     </div>
-</div>
 
-<form method="POST">
+    <form method="POST">
 
-{% for q in questions %}
-{% set q_index = loop.index0 %}
-<div class="question-box mcq-question" style="display:none">
-    <h3>Q{{ loop.index }}. {{ q.question }}</h3>
+        {% for q in questions %}
+        {% set q_index = loop.index0 %}
+        <div class="question-box mcq-question" style="display:none">
+            <h3>Q{{ loop.index }}. {{ q.question }}</h3>
 
-    <div class="options">
-        {% for key, opt in q.options.items() %}
-        <label>
-            <input type="radio" name="q{{ q_index }}" value="{{ key }}" required>
-            {{ opt }}
-        </label>
+            <div class="options">
+                {% for key, opt in q.options.items() %}
+                <label>
+                    <input type="radio" name="q{{ q_index }}" value="{{ key }}" required>
+                    {{ opt }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
         {% endfor %}
-    </div>
-</div>
-{% endfor %}
-{% if session.get("exam_mode") == "strict" %}
-<script>
-let submitted = false;
-dbg("Violation polling started");
+        {% if session.get("exam_mode") == "strict" %}
+        <script>
+            let submitted = false;
+            dbg("Violation polling started");
 
-const violationInterval = setInterval(() => {
-    if (submitted) return;
+            window.violationInterval = setInterval(() => {
+                if (submitted) return;
 
-    dbg("Polling /check-violation");
+                dbg("Polling /check-violation");
 
-    fetch("/check-violation")
-        .then(res => res.json())
-        .then(data => {
-            dbg("check-violation response body", data);
+                fetch("/check-violation")
+                    .then(res => res.json())
+                    .then(data => {
+                        dbg("check-violation response body", data);
 
-            if (data.violation) {
-                dbg("🚨 Violation detected → auto-submitting exam");
+                        if (data.violation) {
+                            dbg("🚨 Violation detected → auto-submitting exam");
 
-                submitted = true;
-                clearInterval(violationInterval);
+                            submitted = true;
+                            clearInterval(window.violationInterval);
 
-                alert("🚫 Violation detected. Exam auto-submitting.");
+                            alert("🚫 Violation detected. Exam auto-submitting.");
 
-                // Stop proctoring cleanly
-                navigator.sendBeacon("/stop-proctoring");
+                            // Stop proctoring cleanly
+                            if (window.violationInterval) clearInterval(window.violationInterval);
+                            const img = document.querySelector('img[src="/proctor-feed"]');
+                            if (img) {
+                                img.src = "";
+                                img.remove();
+                            }
+                            navigator.sendBeacon("/stop-proctoring");
 
-                // ✅ THIS IS THE FIX
-                document.querySelector("form").submit();
+                            // ✅ THIS IS THE FIX
+                            if (document.querySelector("form").requestSubmit) {
+                                document.querySelector("form").requestSubmit();
+                            } else {
+                                document.querySelector("form").submit();
+                            }
+                        }
+                    })
+                    .catch(err => dbg("❌ check-violation failed", err));
+            }, 2000);
+        </script>
+
+        {% endif %}
+
+        <div class="action">
+            <button id="nextBtn" type="button">Next →</button>
+        </div>
+        <script>
+            const form = document.querySelector("form");
+
+            function shutdownProctoring() {
+                dbg("Shutting down proctoring on client...");
+
+                // 1. Clear polling
+                if (window.violationInterval) {
+                    clearInterval(window.violationInterval);
+                    window.violationInterval = null;
+                }
+
+                // 2. Kill the video feed connection immediately
+                const img = document.querySelector('img[src="/proctor-feed"]');
+                if (img) {
+                    img.src = "";
+                    img.remove();
+                    dbg("Proctor feed image removed");
+                }
+
+                // 3. Send stop signal
+                try {
+                    navigator.sendBeacon("/stop-proctoring");
+                } catch (e) {
+                    dbg("Beacon failed", e);
+                }
             }
-        })
-        .catch(err => dbg("❌ check-violation failed", err));
-}, 2000);
-</script>
 
-{% endif %}
-
-<div class="action">
-    <button id="nextBtn" type="button">Next →</button>
-</div>
-<script>
-const form = document.querySelector("form");
-
-form.addEventListener("submit", () => {
-    dbg("Form submitting → stopping proctoring");
-    // navigator.sendBeacon("/stop-proctoring");
-    document.getElementById("nextBtn").disabled = true;
-    document.getElementById("nextBtn").innerText = "Submitting...";
-});
-</script>
+            form.addEventListener("submit", () => {
+                dbg("Form submitting → stopping proctoring");
+                shutdownProctoring();
+                document.getElementById("nextBtn").disabled = true;
+                document.getElementById("nextBtn").innerText = "Submitting...";
+            });
+        </script>
 
 
-</form>
-<script>
-document.getElementById("nextBtn").addEventListener("click", function () {
-    dbg("Next/Submit button clicked", { current });
+    </form>
+    <script>
+        document.getElementById("nextBtn").addEventListener("click", function () {
+            dbg("Next/Submit button clicked", { current });
 
-    const questions = document.getElementsByClassName("mcq-question");
+            const questions = document.getElementsByClassName("mcq-question");
 
-    if (current === questions.length - 1) {
-        dbg("Manual submit triggered");
-        document.querySelector("form").submit();
-    } else {
-        nextQuestion();
-    }
-});
-</script>
+            if (current === questions.length - 1) {
+                dbg("Manual submit triggered");
+
+                // Force shutdown before submitting to free up sockets
+                shutdownProctoring();
+
+                // Use requestSubmit to trigger the form submit event listener
+                if (form.requestSubmit) {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
+            } else {
+                nextQuestion();
+            }
+        });
+    </script>
 
 
 </body>
+
 </html>

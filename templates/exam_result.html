@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Completed</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        .result-card {
+            background: white;
+            width: 420px;
+            padding: 40px 35px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+            animation: popIn 0.6s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .trophy {
+            font-size: 70px;
+            margin-bottom: 15px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        h2 {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            margin: 25px auto;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 15px 35px rgba(118,75,162,0.4);
+        }
+
+        .score {
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .total {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #555;
+            margin-top: 15px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 26px;
+            font-size: 15px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(118,75,162,0.45);
+        }
+
+        .back-btn:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="result-card">
+
+    <div class="trophy">🏆</div>
+
+    <h2>Exam Completed!</h2>
+
+    <div class="score-circle">
+        <div class="score">{{ score }}</div>
+        <div class="total">out of {{ total }}</div>
+    </div>
+
+    <div class="message">
+        Great effort! Keep practicing to improve your score 🚀
+    </div>
+
+    <a href="/custom" class="back-btn">
+        ⬅ Back to Exams
+    </a>
+
+</div>
+
+</body>
+</html>

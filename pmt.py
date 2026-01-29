@@ -55,6 +55,67 @@ def generate_mcq_questions(subject_name='multiple programming, sql, aptitude and
 
     return json.loads(response)
 
+def generate_reasoning_questions(
+    num_mcq=15,
+    difficulty_level="medium"
+):
+    """
+    Generates Reasoning MCQs (Logical, Analytical, Aptitude).
+    Returns strict JSON output only.
+    """
+
+    prompt_template = """
+    You are an expert competitive exam question paper setter.
+
+    Generate EXACTLY {num_mcq} multiple-choice questions
+    from the subject: Reasoning & Aptitude.
+
+    Question types MUST include a mix of:
+    - Logical Reasoning
+    - Number Series
+    - Blood Relations
+    - Direction Sense
+    - Syllogisms
+    - Seating Arrangement (basic)
+    - Coding-Decoding
+    - Quantitative Aptitude (basic)
+
+    Difficulty Level: {difficulty_level}
+
+    STRICT RULES:
+    - Generate EXACTLY {num_mcq} questions
+    - NO explanations
+    - NO extra text
+    - NO markdown
+    - Output MUST be valid JSON
+    - correct_answer MUST be one of: a / b / c / d
+
+    STRICT OUTPUT FORMAT ONLY:
+
+    [
+      {{
+        "question": "Question text",
+        "options": {{
+          "a": "Option A",
+          "b": "Option B",
+          "c": "Option C",
+          "d": "Option D"
+        }},
+        "correct_answer": "a"
+      }}
+    ]
+    """
+
+    prompt = ChatPromptTemplate.from_template(prompt_template)
+    chain = prompt | llm | StrOutputParser()
+
+    response = chain.invoke({
+        "num_mcq": num_mcq,
+        "difficulty_level": difficulty_level
+    })
+
+    return json.loads(response)
+
 def generate_long_questions(subject_name, num_questions, difficulty_level):
         prompt_template = """
         You are an expert examiner.

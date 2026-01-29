@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #eef2f3, #d9e4f5);
+            color: #2c3e50;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            padding: 40px;
+            color: #fff;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-text h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .hero-text p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .hero img {
+            width: 260px;
+            max-width: 100%;
+        }
+
+        /* Cards Section */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .card img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+{% include "admin/navbar.html" %}
+
+<div class="container">
+
+    <!-- Hero Welcome Section -->
+    <div class="hero">
+        <div class="hero-text">
+            <h2>Welcome Admin 👋</h2>
+            <p>
+                Manage students, monitor interview scores, and control the entire
+                recruitment evaluation process from one place.
+            </p>
+        </div>
+
+        <!-- Admin Illustration -->
+        <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="Admin Dashboard">
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="cards">
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
+            <h3>Students</h3>
+            <p>View and manage registered students and their profiles.</p>
+        </div>
+
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png">
+            <h3>Scores</h3>
+            <p>Track interview rounds and performance analytics.</p>
+        </div>
+
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png">
+            <h3>Reports</h3>
+            <p>Generate performance insights and evaluation summaries.</p>
+        </div>
+
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
+            <h3>Settings</h3>
+            <p>Configure admin preferences and system controls.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        © Admin Dashboard • Secure Recruitment Evaluation Platform
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,252 @@
+[
+    {
+        "question": "In inheritance, which principle states that a subclass should be substitutable for its base class without altering the correctness of the program?",
+        "options": {
+            "a": "Open/Closed Principle",
+            "b": "Liskov Substitution Principle",
+            "c": "Interface Segregation Principle",
+            "d": "Dependency Inversion Principle"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "Which design pattern would be most appropriate for ensuring only one instance of a class exists throughout the application?",
+        "options": {
+            "a": "Factory Method",
+            "b": "Singleton",
+            "c": "Prototype",
+            "d": "Builder"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What is the output of dynamic polymorphism (runtime polymorphism) dependent on?",
+        "options": {
+            "a": "The type of the reference variable",
+            "b": "The type of the actual object",
+            "c": "The static type of the method",
+            "d": "The compile-time type checking"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In the context of abstract classes and interfaces, which statement is TRUE?",
+        "options": {
+            "a": "Abstract classes can have constructors, while interfaces cannot",
+            "b": "Interfaces can have instance variables, while abstract classes cannot",
+            "c": "Both abstract classes and interfaces can be instantiated directly",
+            "d": "Interfaces support multiple inheritance, while abstract classes do not"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Which principle of SOLID states that 'software entities should be open for extension but closed for modification'?",
+        "options": {
+            "a": "Single Responsibility Principle",
+            "b": "Open/Closed Principle",
+            "c": "Liskov Substitution Principle",
+            "d": "Interface Segregation Principle"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What is the main purpose of the 'virtual' keyword in C++?",
+        "options": {
+            "a": "To prevent a class from being inherited",
+            "b": "To enable dynamic binding of functions",
+            "c": "To make a function inline for optimization",
+            "d": "To declare a constant member function"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In composition vs aggregation, what is the key difference?",
+        "options": {
+            "a": "Composition implies ownership, aggregation does not",
+            "b": "Aggregation is stronger than composition",
+            "c": "Composition uses pointers, aggregation uses references",
+            "d": "Aggregation implies ownership, composition does not"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Which of the following is an example of tight coupling that should be avoided?",
+        "options": {
+            "a": "Using interfaces to depend on abstractions",
+            "b": "Directly instantiating concrete classes in client code",
+            "c": "Applying dependency injection",
+            "d": "Using factory patterns for object creation"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What does the 'final' keyword prevent when applied to a method in Java?",
+        "options": {
+            "a": "The method from being overloaded",
+            "b": "The method from being overridden in subclasses",
+            "c": "The method from being called",
+            "d": "The method from being declared as static"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In the context of exception handling in OOP, which is a good practice?",
+        "options": {
+            "a": "Catching and swallowing all exceptions silently",
+            "b": "Using exceptions for normal flow control",
+            "c": "Throwing exceptions appropriate to the abstraction level",
+            "d": "Making all exceptions checked exceptions"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "What is the primary purpose of the 'friend' keyword in C++?",
+        "options": {
+            "a": "To allow a function or class to access private members of another class",
+            "b": "To establish inheritance between classes",
+            "c": "To create virtual functions",
+            "d": "To implement polymorphism"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Which pattern is specifically designed to provide a simplified interface to a complex subsystem?",
+        "options": {
+            "a": "Adapter Pattern",
+            "b": "Facade Pattern",
+            "c": "Decorator Pattern",
+            "d": "Proxy Pattern"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What is the main advantage of using dependency injection?",
+        "options": {
+            "a": "It increases compilation time",
+            "b": "It reduces testability of code",
+            "c": "It promotes loose coupling between classes",
+            "d": "It makes code execution faster"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "In C++, what is the difference between deep copy and shallow copy?",
+        "options": {
+            "a": "Shallow copy duplicates pointers, deep copy duplicates what pointers point to",
+            "b": "Deep copy is faster than shallow copy",
+            "c": "Shallow copy is only for primitive types",
+            "d": "Deep copy doesn't work with dynamic memory"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Which concept allows a class to have multiple methods with the same name but different parameters?",
+        "options": {
+            "a": "Method overriding",
+            "b": "Method overloading",
+            "c": "Polymorphism",
+            "d": "Inheritance"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What is the 'diamond problem' in multiple inheritance, and how is it resolved in languages like Java?",
+        "options": {
+            "a": "Ambiguity when two parent classes have same method; resolved using virtual inheritance",
+            "b": "Conflict when a class inherits from two classes with same method; resolved using interfaces instead of multiple inheritance",
+            "c": "Issue with constructor chaining; resolved using super() calls",
+            "d": "Problem with private inheritance; resolved using public inheritance only"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In the context of design patterns, what does the Strategy pattern primarily enable?",
+        "options": {
+            "a": "Creating families of related objects",
+            "b": "Defining a family of algorithms and making them interchangeable",
+            "c": "Adding responsibilities to objects dynamically",
+            "d": "Providing a surrogate for another object"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What is the purpose of the 'protected' access modifier?",
+        "options": {
+            "a": "Accessible only within the same class",
+            "b": "Accessible from any class",
+            "c": "Accessible within the same package and subclasses",
+            "d": "Accessible only within the same package"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "Which principle suggests that 'no client should be forced to depend on methods it does not use'?",
+        "options": {
+            "a": "Single Responsibility Principle",
+            "b": "Interface Segregation Principle",
+            "c": "Dependency Inversion Principle",
+            "d": "Liskov Substitution Principle"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "What is the main characteristic of an immutable object?",
+        "options": {
+            "a": "Its state can be changed after creation",
+            "b": "Its state cannot be changed after creation",
+            "c": "It must inherit from a specific base class",
+            "d": "It can only contain primitive data types"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In C++, what is the purpose of a pure virtual function?",
+        "options": {
+            "a": "To make a function inline for performance",
+            "b": "To declare a function that must be overridden in derived classes",
+            "c": "To prevent a function from being overridden",
+            "d": "To make a function thread-safe"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "Which pattern is used when you want to separate the construction of a complex object from its representation?",
+        "options": {
+            "a": "Factory Method",
+            "b": "Abstract Factory",
+            "c": "Builder",
+            "d": "Prototype"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "What is method hiding (shadowing) in inheritance?",
+        "options": {
+            "a": "When a subclass method overrides a superclass method",
+            "b": "When a subclass defines a static method with same signature as superclass static method",
+            "c": "When a method is declared private in subclass",
+            "d": "When a method is made final in superclass"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In the context of cohesion and coupling, what should be maximized and minimized respectively for good design?",
+        "options": {
+            "a": "Maximize coupling, minimize cohesion",
+            "b": "Maximize both cohesion and coupling",
+            "c": "Maximize cohesion, minimize coupling",
+            "d": "Minimize both cohesion and coupling"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "What is the Visitor design pattern primarily used for?",
+        "options": {
+            "a": "Adding new operations to existing object structures without modifying them",
+            "b": "Creating objects without specifying the exact class",
+            "c": "Providing a way to access elements of a collection sequentially",
+            "d": "Defining a one-to-many dependency between objects"
+        },
+        "correct_answer": "a"
+    }
+]

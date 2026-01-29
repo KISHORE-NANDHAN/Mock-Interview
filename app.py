@@ -12,8 +12,8 @@ from routes.profile import profile_bp
 from routes.misc import misc_bp
 from routes.pdf_export import download_bp
 from routes.proctor import proctor_bp
-
-
+from routes.Custom import custom_bp
+from admin import admin_bp
 
 
 def create_app():
@@ -49,6 +49,10 @@ def create_app():
     app.register_blueprint(misc_bp)
     app.register_blueprint(download_bp)
     app.register_blueprint(proctor_bp)
+    
+    app.register_blueprint(admin_bp)
+
+    app.register_blueprint(custom_bp)
 
     @app.route("/test_model")
     def test_model():

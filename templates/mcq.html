@@ -260,13 +260,7 @@
                             alert("🚫 Violation detected. Exam auto-submitting.");
 
                             // Stop proctoring cleanly
-                            if (window.violationInterval) clearInterval(window.violationInterval);
-                            const img = document.querySelector('img[src="/proctor-feed"]');
-                            if (img) {
-                                img.src = "";
-                                img.remove();
-                            }
-                            navigator.sendBeacon("/stop-proctoring");
+                            shutdownProctoring();
 
                             // ✅ THIS IS THE FIX
                             if (document.querySelector("form").requestSubmit) {
@@ -332,8 +326,8 @@
             if (current === questions.length - 1) {
                 dbg("Manual submit triggered");
 
-                // Force shutdown before submitting to free up sockets
-                shutdownProctoring();
+                // Note: shutdownProctoring() is called in the submit event listener
+                // so we don't need to call it here to avoid race conditions.
 
                 // Use requestSubmit to trigger the form submit event listener
                 if (form.requestSubmit) {

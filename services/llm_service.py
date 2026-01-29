@@ -9,7 +9,8 @@ from pmt import (
     generate_reading_paragraph,
     generate_topic,
     generate_fill_in_blanks,
-    generate_listening_questions
+    generate_listening_questions,
+    generate_reasoning_questions
 )
 
 
@@ -63,6 +64,13 @@ def generate_questions_llm(round_type: str, company: str):
     if round_type.startswith("hr"):
         questions = generate_hr_questions(company)
         session["hr_questions"] = questions
+        return questions
+    
+    elif round_type=='reasoning':
+        # Call your LLM prompt function for MCQs
+        session.pop("reasoning_questions", None)   
+        questions = generate_reasoning_questions()  # should return a list of dicts
+        # Example: [{"question": "...", "options": [...], "answer": "..."}]
         return questions
 
     return []

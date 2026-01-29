@@ -26,75 +26,85 @@ def start_proctoring():
     global cap
     dbg("start_proctoring called")
 
+    # If already running, just return
     if PROCTOR_STATE["running"]:
         dbg("start_proctoring: Already running")
         return
 
-    cap = cv2.VideoCapture(0)
+    # Initialize state
     PROCTOR_STATE["running"] = True
     PROCTOR_STATE["violation"] = False
-    dbg("start_proctoring: Camera initialized, state set to running")
-
+    
+    # Initialize camera synchronously first to fail fast if busy
+    # But we will manage the MAIN lifecycle in the thread
+    if cap is None:
+        cap = cv2.VideoCapture(0)
+        dbg("start_proctoring: Camera initialized")
+    
     # Initialize first frame
-    ret, frame = cap.read()
-    if ret:
-        with lock:
-            PROCTOR_STATE["frame"] = frame.copy()
+    if cap and cap.isOpened():
+        ret, frame = cap.read()
+        if ret:
+            with lock:
+                PROCTOR_STATE["frame"] = frame.copy()
 
     def run():
         global cap
         dbg("Proctor loop started")
 
-        while PROCTOR_STATE["running"]:
-            if cap is None:
-                dbg("Proctor loop: cap is None, breaking")
-                break
-            ret, frame = cap.read()
-            if not ret:
-                time.sleep(0.05)
-                continue
+        try:
+            while PROCTOR_STATE["running"]:
+                if cap is None or not cap.isOpened():
+                    dbg("Proctor loop: cap is None or closed, attempting reconnect...")
+                    cap = cv2.VideoCapture(0)
+                    time.sleep(0.5)
+                    if not cap.isOpened():
+                        continue
+                
+                ret, frame = cap.read()
+                if not ret:
+                    time.sleep(0.05)
+                    continue
 
-            results = model(frame, conf=0.4, verbose=False)
+                # Run inference
+                results = model(frame, conf=0.4, verbose=False)
 
-            for box in results[0].boxes:
-                label = model.names[int(box.cls[0])]
-                if label in ["cell phone", "laptop"]:
-                    dbg(f"Violation detected: {label}")
-                    PROCTOR_STATE["violation"] = True
-                    PROCTOR_STATE["running"] = False
-                    break
+                for box in results[0].boxes:
+                    label = model.names[int(box.cls[0])]
+                    if label in ["cell phone", "laptop"]:
+                        dbg(f"Violation detected: {label}")
+                        PROCTOR_STATE["violation"] = True
+                        # Don't stop running immediately, just flag it
+                        # The client will poll /check-violation and handle the stop
+                        break
 
-            with lock:
-                PROCTOR_STATE["frame"] = frame.copy()
+                with lock:
+                    PROCTOR_STATE["frame"] = frame.copy()
 
-            time.sleep(0.2)
-        dbg("Proctor loop ended")
+                time.sleep(0.1) # Reduced sleep for better responsiveness
+                
+        except Exception as e:
+            dbg(f"Proctor loop error: {e}")
+        finally:
+            # CLEANUP HAPPENS HERE - SAFE AND SEQUENTIAL
+            dbg("Proctor loop ending... cleaning up resources")
+            if cap:
+                cap.release()
+                cap = None
+            PROCTOR_STATE["running"] = False
+            PROCTOR_STATE["frame"] = None
+            dbg("Proctor loop cleanup complete")
 
     threading.Thread(target=run, daemon=True).start()
 
 
 def stop_proctoring():
-    global cap
     dbg("stop_proctoring called")
-    if not PROCTOR_STATE["running"]:
-        dbg("stop_proctoring: Not running, ignoring")
-        return
-        
+    # Just signal the loop to stop.
+    # The loop will handle the release() in its finally block.
+    # This prevents the "release while reading" race condition.
     PROCTOR_STATE["running"] = False
-    dbg("stop_proctoring: State set to False")
-    
-    # Release camera in a separate thread to prevent blocking the main request
-    def release_cam(c):
-        dbg("release_cam: Starting release")
-        if c:
-            c.release()
-            dbg("release_cam: Camera released")
-        else:
-            dbg("release_cam: No camera to release")
-            
-    threading.Thread(target=release_cam, args=(cap,)).start()
-    cap = None
-
+    dbg("Signal sent to stop proctoring")
 
 def gen_frames():
     dbg("gen_frames generator started")

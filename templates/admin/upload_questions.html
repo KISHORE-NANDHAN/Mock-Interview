@@ -1,0 +1,9 @@
+{% include "admin/navbar.html" %}
+
+<h2>Upload Questions for Exam: {{ exam[0] }}</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <label>Select JSON file:</label>
+    <input type="file" name="json_file" accept=".json" required>
+    <button type="submit">Upload</button>
+</form>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        overflow: hidden;
+    }
+
+    /* Floating background circles */
+    body::before, body::after {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 50%;
+        filter: blur(80px);
+    }
+
+    body::before {
+        top: -50px;
+        left: -50px;
+    }
+
+    body::after {
+        bottom: -50px;
+        right: -50px;
+    }
+
+    .login-container {
+        width: 360px;
+        padding: 40px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        text-align: center;
+        animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-container img {
+        width: 80px;
+        margin-bottom: 15px;
+    }
+
+    .login-container h2 {
+        color: #fff;
+        margin-bottom: 25px;
+        letter-spacing: 1px;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 14px 45px;
+        border-radius: 12px;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+    }
+
+    .input-group input::placeholder {
+        color: rgba(255,255,255,0.8);
+    }
+
+    .input-group span {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #fff;
+    }
+
+    .input-group input:focus {
+        background: rgba(255,255,255,0.35);
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #764ba2;
+        background: #fff;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    button:hover {
+        background: #f1f1f1;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .footer-text {
+        margin-top: 15px;
+        font-size: 13px;
+        color: rgba(255,255,255,0.8);
+    }
+</style>
+</head>
+
+<body>
+
+<form method="post" class="login-container">
+    <!-- Admin Icon Image -->
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin">
+
+    <h2>Admin Login</h2>
+
+    <div class="input-group">
+        <span>👤</span>
+        <input name="username" placeholder="Username" required>
+    </div>
+
+    <div class="input-group">
+        <span>🔒</span>
+        <input type="password" name="password" placeholder="Password" required>
+    </div>
+
+    <button type="submit">Login</button>
+
+    <div class="footer-text">
+        Secure Admin Access Only
+    </div>
+</form>
+
+</body>
+</html>

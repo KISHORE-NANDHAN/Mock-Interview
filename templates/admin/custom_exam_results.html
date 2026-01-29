@@ -1,0 +1,162 @@
+{% include "admin/navbar.html" %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #eef2f3, #d9e4f5);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 30px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+    }
+
+    .header h2 {
+        color: #2c3e50;
+        font-size: 28px;
+    }
+
+    /* Card wrapper */
+    .card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        animation: fadeUp 0.8s ease;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Table styling */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+    }
+
+    tbody tr {
+        background: #fff;
+        transition: 0.3s ease;
+    }
+
+    tbody tr:nth-child(even) {
+        background: #f5f7ff;
+    }
+
+    tbody tr:hover {
+        background: #e8ecff;
+        transform: scale(1.01);
+    }
+
+    /* Score badges */
+    .score-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        color: #fff;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .score-low { background: #e74c3c; }
+    .score-mid { background: #f39c12; }
+    .score-high { background: #2ecc71; }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #666;
+    }
+
+    .empty-state img {
+        width: 120px;
+        margin-bottom: 15px;
+        opacity: 0.7;
+    }
+
+    .footer-note {
+        text-align: center;
+        font-size: 13px;
+        color: #777;
+        margin-top: 25px;
+    }
+</style>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h2>📊 Custom Exam Results</h2>
+    </div>
+
+    <div class="card">
+
+        {% if results|length == 0 %}
+            <div class="empty-state">
+                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076504.png">
+                <p><strong>No custom exam attempts yet.</strong></p>
+            </div>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>👤 Student</th>
+                        <th>🏆 Score</th>
+                        <th>📘 Total</th>
+                        <th>🕒 Attempted At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr>
+                        <td>{{ r[0] }}</td>
+
+                        <!-- Score badge logic -->
+                        <td>
+                            {% if r[2] / r[3] >= 0.7 %}
+                                <span class="score-badge score-high">{{ r[2] }}</span>
+                            {% elif r[2] / r[3] >= 0.4 %}
+                                <span class="score-badge score-mid">{{ r[2] }}</span>
+                            {% else %}
+                                <span class="score-badge score-low">{{ r[2] }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ r[3] }}</td>
+                        <td>{{ r[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+    </div>
+
+    <div class="footer-note">
+        © Admin Panel • Custom Exam Evaluation System
+    </div>
+
+</div>

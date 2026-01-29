@@ -1,0 +1,252 @@
+[
+    {
+        "question": "A train 150 meters long passes a pole in 15 seconds. What is the speed of the train in km/hr?",
+        "options": {
+            "a": "36 km/hr",
+            "b": "45 km/hr",
+            "c": "54 km/hr",
+            "d": "60 km/hr"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "If the ratio of ages of A and B is 3:4 and the ratio of ages of B and C is 5:6, what is the ratio of ages of A, B and C?",
+        "options": {
+            "a": "3:4:6",
+            "b": "9:12:16",
+            "c": "15:20:24",
+            "d": "12:15:18"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "A shopkeeper marks his goods 40% above cost price but allows a discount of 15%. What is his net profit percentage?",
+        "options": {
+            "a": "19%",
+            "b": "21%",
+            "c": "25%",
+            "d": "17%"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Pipe A can fill a tank in 6 hours, Pipe B can fill it in 8 hours. Pipe C can empty the full tank in 12 hours. If all three pipes are opened together, how long will it take to fill the empty tank?",
+        "options": {
+            "a": "4 hours",
+            "b": "4.8 hours",
+            "c": "5 hours",
+            "d": "6 hours"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "In how many different ways can the letters of the word 'CORPORATION' be arranged so that vowels always come together?",
+        "options": {
+            "a": "50400",
+            "b": "72000",
+            "c": "86400",
+            "d": "100800"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "A boat travels 30 km upstream in 5 hours and 44 km downstream in 4 hours. What is the speed of the boat in still water?",
+        "options": {
+            "a": "8 km/hr",
+            "b": "9 km/hr",
+            "c": "10 km/hr",
+            "d": "11 km/hr"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "If 20% of x = 30% of y = 40% of z, then x:y:z is:",
+        "options": {
+            "a": "2:3:4",
+            "b": "3:4:5",
+            "c": "6:4:3",
+            "d": "4:3:2"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "A sum of money doubles itself in 5 years at simple interest. In how many years will it become 8 times?",
+        "options": {
+            "a": "20 years",
+            "b": "25 years",
+            "c": "30 years",
+            "d": "35 years"
+        },
+        "correct_answer": "d"
+    },
+    {
+        "question": "The average weight of 8 persons increases by 2.5 kg when a new person replaces one of them weighing 65 kg. What is the weight of the new person?",
+        "options": {
+            "a": "75 kg",
+            "b": "80 kg",
+            "c": "85 kg",
+            "d": "90 kg"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "A and B can do a work in 12 days, B and C in 15 days, C and A in 20 days. In how many days will A alone complete the work?",
+        "options": {
+            "a": "20 days",
+            "b": "25 days",
+            "c": "30 days",
+            "d": "35 days"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "If log₂[log₃(log₂x)] = 1, then what is the value of x?",
+        "options": {
+            "a": "512",
+            "b": "256",
+            "c": "128",
+            "d": "64"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Two dice are thrown simultaneously. What is the probability of getting a sum which is a perfect square?",
+        "options": {
+            "a": "1/6",
+            "b": "7/36",
+            "c": "1/4",
+            "d": "5/18"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "A rectangular plot measuring 90 meters by 50 meters is to be enclosed by wire fencing. If poles of the fence are kept 5 meters apart, how many poles will be needed?",
+        "options": {
+            "a": "55",
+            "b": "56",
+            "c": "57",
+            "d": "58"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "The difference between compound interest and simple interest on a sum of money at 10% per annum for 2 years is ₹100. What is the principal amount?",
+        "options": {
+            "a": "₹8,000",
+            "b": "₹9,000",
+            "c": "₹10,000",
+            "d": "₹11,000"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "If 2ᵃ = 3ᵇ = 6ᶜ, then what is 1/a + 1/b equal to?",
+        "options": {
+            "a": "1/c",
+            "b": "c",
+            "c": "2/c",
+            "d": "1/2c"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "A man walks at 5 km/hr for 6 hours and at 4 km/hr for 12 hours. What is his average speed for the whole journey?",
+        "options": {
+            "a": "4.33 km/hr",
+            "b": "4.5 km/hr",
+            "c": "4.67 km/hr",
+            "d": "5 km/hr"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "Find the missing number in the series: 2, 3, 8, 27, 112, ?",
+        "options": {
+            "a": "225",
+            "b": "339",
+            "c": "565",
+            "d": "678"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "Three numbers are in the ratio 3:4:5. The sum of their cubes is 7776. Find the numbers.",
+        "options": {
+            "a": "9, 12, 15",
+            "b": "12, 16, 20",
+            "c": "15, 20, 25",
+            "d": "18, 24, 30"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "In a class of 50 students, 30 play cricket, 25 play football, and 15 play both. How many students play neither cricket nor football?",
+        "options": {
+            "a": "5",
+            "b": "10",
+            "c": "15",
+            "d": "20"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "A reduction of 20% in the price of sugar enables a purchaser to obtain 4 kg more for ₹160. What is the reduced price per kg?",
+        "options": {
+            "a": "₹6",
+            "b": "₹7",
+            "c": "₹8",
+            "d": "₹9"
+        },
+        "correct_answer": "c"
+    },
+    {
+        "question": "If x + 1/x = 3, then what is the value of x⁵ + 1/x⁵?",
+        "options": {
+            "a": "123",
+            "b": "144",
+            "c": "169",
+            "d": "196"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
+        "options": {
+            "a": "0°",
+            "b": "7.5°",
+            "c": "15°",
+            "d": "22.5°"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "A man sells two articles for ₹3960 each. He gains 10% on one and loses 10% on the other. What is his overall gain or loss percentage?",
+        "options": {
+            "a": "1% gain",
+            "b": "1% loss",
+            "c": "No gain no loss",
+            "d": "2% loss"
+        },
+        "correct_answer": "b"
+    },
+    {
+        "question": "If the perimeter of a rectangle is 34 cm and its diagonal is 13 cm, what is its area?",
+        "options": {
+            "a": "60 cm²",
+            "b": "65 cm²",
+            "c": "70 cm²",
+            "d": "75 cm²"
+        },
+        "correct_answer": "a"
+    },
+    {
+        "question": "A student multiplied a number by 3/5 instead of 5/3. What is the percentage error in the calculation?",
+        "options": {
+            "a": "44%",
+            "b": "64%",
+            "c": "72%",
+            "d": "80%"
+        },
+        "correct_answer": "b"
+    }
+]

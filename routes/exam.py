@@ -94,9 +94,12 @@ def exam(round_id):
             session["technical_questions"] = [q["question"] for q in questions]
             from flask import current_app
             current_app.config["TECH_QUESTION_CACHE"] = questions
-         
+
         if round_type == "mcq":
             session["mcq_questions"] = questions
+
+        elif round_type == "reasoning":
+            session["reasoning_questions"] = questions
         
         logger.info(
             "Generated questions | round_type=%s | company=%s | questions=%s",
@@ -171,6 +174,17 @@ def exam(round_id):
                 concepts = ", ".join(q.get("concepts", []))
                 concepts = list(set(concepts.split(", ")))
                 logger.info("Incorrect answer | question=%s | concepts=%s", q["question"], concepts)
+
+    elif round_type == "reasoning":
+        questions = session.get("reasoning_questions", [])
+        total = len(questions)
+
+        for i, q in enumerate(questions):
+            user_ans = request.form.get(f"q{i}")
+
+            correct = q.get("correct_answer")
+            if correct and user_ans == correct:
+                score += 1
 
     elif round_type == "coding":
         questions = session.get("coding_questions", [])
@@ -291,8 +305,13 @@ def exam(round_id):
 
 
     dbg("Redirecting to /score")
+    
+    # Ensure stop_proctoring doesn't crash the request
     try:
+        dbg("Calling stop_proctoring from exam route")
         stop_proctoring()
     except Exception as e:
-        dbg(f"Error stopping proctoring: {e}")
+        logger.error(f"Failed to stop proctoring: {e}")
+        dbg(f"Failed to stop proctoring: {e}")
+        
     return redirect("/score")

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Question</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        .question-container {
+            background: #ffffff;
+            width: 70%;
+            max-width: 800px;
+            padding: 35px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: {{ (index / total) * 100 }}%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.4s ease;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .options {
+            margin-top: 20px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid #eee;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #764ba2;
+            background: #f4f2ff;
+        }
+
+        .option input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .option span {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(118,75,162,0.4);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 768px) {
+            .question-container {
+                width: 90%;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="question-container">
+
+    <div class="top-bar">
+        <div>
+            <strong>Question {{ index }} of {{ total }}</strong>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post">
+
+        <div class="question-text">
+            {{ question.question }}
+        </div>
+
+        <div class="options">
+            {% for key, value in question.options.items() %}
+            <label class="option">
+                <input type="radio" name="option" value="{{ key }}" required>
+                <span><b>{{ key | upper }}.</b> {{ value }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <button class="submit-btn">
+            {% if index == total %}
+                ✅ Submit Exam
+            {% else %}
+                ➡ Next Question
+            {% endif %}
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

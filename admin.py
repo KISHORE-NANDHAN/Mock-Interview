@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, flash
 import sqlite3, json
 from werkzeug.security import check_password_hash
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import os
 from flask import render_template, redirect, session, url_for
@@ -202,6 +204,72 @@ def download_template():
         return send_file(TEMPLATE_JSON, as_attachment=True)
     else:
         return "Template JSON not found."
+
+# ---------------- ADD COMPANY PAGE ----------------
+def get_round_type(name):
+    name = name.lower()
+    if "mcq" in name:
+        return "mcq"
+    if "coding" in name:
+        return "coding"
+    if "communication" in name:
+        return "communication"
+    if "technical" in name:
+        return "technical"
+    if "hr" in name:
+        return "hr"
+    if "reasoning" in name:
+        return "reasoning"
+    return "mcq"
+
+@admin_bp.route("/add_company", methods=["GET", "POST"])
+def add_company():
+    if "admin" not in session:
+        return redirect("/admin/login")
+
+    if request.method == "POST":
+        company_name = request.form.get("company_name").strip()
+        rounds = request.form.getlist("rounds[]")
+
+        if not company_name or not rounds:
+            flash("Company name and at least one round are required.", "error")
+            return redirect("/admin/add_company")
+
+        db = get_db()
+        try:
+            # Insert Company
+            db.execute("INSERT INTO companies (name) VALUES (?)", (company_name,))
+            company_id = db.execute("SELECT id FROM companies WHERE name = ?", (company_name,)).fetchone()[0]
+
+            # Insert Rounds
+            for round_name in rounds:
+                round_name = round_name.strip()
+                if round_name:
+                    db.execute("""
+                        INSERT INTO rounds (company_id, round_name, round_type)
+                        VALUES (?, ?, ?)
+                    """, (company_id, round_name, get_round_type(round_name)))
+            
+            db.commit()
+            flash(f"Company '{company_name}' added successfully!", "success")
+        except sqlite3.IntegrityError:
+            flash(f"Company '{company_name}' already exists.", "error")
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}", "error")
+        finally:
+            db.close()
+
+        return redirect("/admin/add_company")
+
+    return render_template("admin/add_company.html")
+
+
+@admin_bp.route("/create_questions")
+def create_questions():
+    if "admin" not in session:
+        return redirect("/admin/login")
+    return render_template("admin/create_questions.html")
+
 
 # ---------------- LOGOUT ----------------
 @admin_bp.route("/logout")

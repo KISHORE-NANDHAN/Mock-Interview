@@ -1,155 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #eef2f3, #d9e4f5);
-            color: #2c3e50;
-        }
-
-        .container {
-            padding: 40px;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        /* Hero Section */
-        .hero {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 20px;
-            padding: 40px;
-            color: #fff;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-            margin-bottom: 40px;
-            animation: fadeIn 1s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero-text h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .hero-text p {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .hero img {
-            width: 260px;
-            max-width: 100%;
-        }
-
-        /* Cards Section */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 18px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            transition: 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        .card img {
-            width: 80px;
-            margin-bottom: 15px;
-        }
-
-        .card h3 {
-            margin-bottom: 10px;
-            color: #34495e;
-        }
-
-        .card p {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 13px;
-            color: #777;
-        }
-    </style>
 </head>
 
-<body>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-900">
 
-{% include "admin/navbar.html" %}
+    {% include "admin/navbar.html" %}
 
-<div class="container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Hero Welcome Section -->
-    <div class="hero">
-        <div class="hero-text">
-            <h2>Welcome Admin 👋</h2>
-            <p>
-                Manage students, monitor interview scores, and control the entire
-                recruitment evaluation process from one place.
-            </p>
+        <!-- Hero Section -->
+        <div
+            class="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl shadow-2xl mb-12">
+            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-white/10 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-white/10 blur-3xl"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-10 md:p-14 text-white">
+                <div class="max-w-xl">
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">Welcome Back, Admin! 👋</h2>
+                    <p class="text-lg md:text-xl opacity-90 font-light">
+                        Manage students, monitor interview performance, and oversee the entire recruitment process with
+                        precision and ease.
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <!-- Illustration -->
+                    <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="Admin Dashboard"
+                        class="w-48 h-48 lg:w-64 lg:h-64 object-contain drop-shadow-lg transform hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
         </div>
 
-        <!-- Admin Illustration -->
-        <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="Admin Dashboard">
+        <!-- Dashboard Grid -->
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 px-2">Quick Actions</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- Card: Students -->
+            <a href="/admin/students"
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png" class="w-10 h-10"
+                            alt="Students">
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Students</h3>
+                    <p class="text-sm text-gray-500 line-clamp-2">View registered students, manage profiles, and track
+                        enrollment.</p>
+                </div>
+            </a>
+
+            <!-- Card: Scores -->
+            <a href="/admin/results"
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png" class="w-10 h-10"
+                            alt="Scores">
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Scores</h3>
+                    <p class="text-sm text-gray-500 line-clamp-2">Analyze interview results, compare performance, and
+                        export data.</p>
+                </div>
+            </a>
+
+            <!-- Card: Add Company -->
+            <a href="/admin/add_company"
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1006/1006555.png" class="w-10 h-10"
+                            alt="Companies">
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Add Company</h3>
+                    <p class="text-sm text-gray-500 line-clamp-2">Register new companies and define their interview
+                        rounds.</p>
+                </div>
+            </a>
+
+            <!-- Card: Settings -->
+            <a href="#"
+                class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-16 h-16 bg-gray-50 text-gray-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" class="w-10 h-10"
+                            alt="Settings">
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Settings</h3>
+                    <p class="text-sm text-gray-500 line-clamp-2">Configure system preferences and admin controls.</p>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-sm text-gray-400">
+            <p>&copy; 2026 Recruitment Evaluation System. All rights reserved.</p>
+        </footer>
+
     </div>
-
-    <!-- Dashboard Cards -->
-    <div class="cards">
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
-            <h3>Students</h3>
-            <p>View and manage registered students and their profiles.</p>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910791.png">
-            <h3>Scores</h3>
-            <p>Track interview rounds and performance analytics.</p>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png">
-            <h3>Reports</h3>
-            <p>Generate performance insights and evaluation summaries.</p>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png">
-            <h3>Settings</h3>
-            <p>Configure admin preferences and system controls.</p>
-        </div>
-    </div>
-
-    <div class="footer">
-        © Admin Dashboard • Secure Recruitment Evaluation Platform
-    </div>
-
-</div>
 
 </body>
+
 </html>

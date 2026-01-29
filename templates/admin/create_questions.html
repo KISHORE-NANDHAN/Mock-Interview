@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Question Builder</title>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans text-gray-900">
+
+    {% include "admin/navbar.html" %}
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">🛠️ Question Builder</h2>
+            <button onclick="downloadJSON()"
+                class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg transition-transform transform hover:-translate-y-0.5 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+                Download JSON
+            </button>
+        </div>
+
+        <div id="questions-container" class="space-y-6">
+            <!-- Questions will be added here dynamically -->
+        </div>
+
+        <div class="mt-8 text-center">
+            <button onclick="addQuestion()"
+                class="px-6 py-3 bg-white border-2 border-dashed border-indigo-300 text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-500 transition-all flex items-center gap-2 mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        clip-rule="evenodd" />
+                </svg>
+                Add Another Question
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Template for a single question block (Hidden) -->
+    <template id="question-template">
+        <div
+            class="question-block bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative animate-fade-in-up">
+            <div class="flex justify-between items-start mb-4">
+                <h4 class="text-lg font-bold text-gray-700">Question <span class="q-number">1</span></h4>
+                <button onclick="removeQuestion(this)"
+                    class="text-red-400 hover:text-red-600 transition-colors bg-red-50 p-2 rounded-lg"
+                    title="Remove Question">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Question Text</label>
+                    <textarea
+                        class="q-text block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                        rows="2" placeholder="Enter your question here..." required></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Option A</label>
+                        <input type="text"
+                            class="opt-a block w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-indigo-500 text-sm"
+                            placeholder="Option A" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Option B</label>
+                        <input type="text"
+                            class="opt-b block w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-indigo-500 text-sm"
+                            placeholder="Option B" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Option C</label>
+                        <input type="text"
+                            class="opt-c block w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-indigo-500 text-sm"
+                            placeholder="Option C" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Option D</label>
+                        <input type="text"
+                            class="opt-d block w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-indigo-500 text-sm"
+                            placeholder="Option D" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Correct Answer</label>
+                    <div class="flex gap-4">
+                        <label
+                            class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                            <input type="radio" name="ans-unique" value="A"
+                                class="ans-radio text-indigo-600 focus:ring-indigo-500" checked>
+                            <span class="text-sm font-medium">A</span>
+                        </label>
+                        <label
+                            class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                            <input type="radio" name="ans-unique" value="B"
+                                class="ans-radio text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium">B</span>
+                        </label>
+                        <label
+                            class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                            <input type="radio" name="ans-unique" value="C"
+                                class="ans-radio text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium">C</span>
+                        </label>
+                        <label
+                            class="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                            <input type="radio" name="ans-unique" value="D"
+                                class="ans-radio text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium">D</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        let questionCount = 0;
+
+        function addQuestion() {
+            questionCount++;
+            const container = document.getElementById('questions-container');
+            const template = document.getElementById('question-template');
+            const clone = template.content.cloneNode(true);
+
+            // Set question number
+            clone.querySelector('.q-number').textContent = questionCount;
+
+            // Make radio names unique per question
+            const radios = clone.querySelectorAll('.ans-radio');
+            radios.forEach(radio => {
+                radio.name = `ans-${questionCount}`;
+            });
+
+            container.appendChild(clone);
+
+            // Scroll to new question
+            container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function removeQuestion(btn) {
+            const block = btn.closest('.question-block');
+            block.remove();
+            updateQuestionNumbers();
+        }
+
+        function updateQuestionNumbers() {
+            const blocks = document.querySelectorAll('.question-block');
+            questionCount = 0;
+            blocks.forEach(block => {
+                questionCount++;
+                block.querySelector('.q-number').textContent = questionCount;
+                // Update radio names to keep them consistent
+                block.querySelectorAll('.ans-radio').forEach(radio => {
+                    radio.name = `ans-${questionCount}`;
+                });
+            });
+        }
+
+        function downloadJSON() {
+            const blocks = document.querySelectorAll('.question-block');
+            const questions = [];
+
+            blocks.forEach(block => {
+                const qText = block.querySelector('.q-text').value.trim();
+                const optA = block.querySelector('.opt-a').value.trim();
+                const optB = block.querySelector('.opt-b').value.trim();
+                const optC = block.querySelector('.opt-c').value.trim();
+                const optD = block.querySelector('.opt-d').value.trim();
+
+                // Get checked radio value
+                let correctAns = '';
+                block.querySelectorAll('.ans-radio').forEach(radio => {
+                    if (radio.checked) correctAns = radio.value;
+                });
+
+                if (qText && optA && optB && optC && optD) {
+                    questions.push({
+                        "question": qText,
+                        "options": {
+                            "A": optA,
+                            "B": optB,
+                            "C": optC,
+                            "D": optD
+                        },
+                        "correct_answer": correctAns
+                    });
+                }
+            });
+
+            if (questions.length === 0) {
+                alert("Please add at least one complete question.");
+                return;
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questions, null, 4));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "questions.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        // Add first question by default
+        window.onload = addQuestion;
+    </script>
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s ease-out;
+        }
+    </style>
+
+</body>
+
+</html>

@@ -1,162 +1,102 @@
-{% include "admin/navbar.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-    body {
-        background: linear-gradient(135deg, #eef2f3, #d9e4f5);
-        font-family: 'Segoe UI', sans-serif;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Exam Results</title>
+</head>
 
-    .container {
-        max-width: 1200px;
-        margin: auto;
-        padding: 30px;
-    }
+<body class="bg-gray-50 min-h-screen font-sans text-gray-900">
 
-    .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 25px;
-    }
+    {% include "admin/navbar.html" %}
 
-    .header h2 {
-        color: #2c3e50;
-        font-size: 28px;
-    }
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    /* Card wrapper */
-    .card {
-        background: rgba(255,255,255,0.95);
-        border-radius: 18px;
-        padding: 25px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        animation: fadeUp 0.8s ease;
-    }
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">📊 Custom Exam Results</h2>
+        </div>
 
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
 
-    /* Table styling */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        overflow: hidden;
-        border-radius: 12px;
-    }
-
-    thead {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: #fff;
-    }
-
-    th, td {
-        padding: 14px 16px;
-        text-align: center;
-    }
-
-    tbody tr {
-        background: #fff;
-        transition: 0.3s ease;
-    }
-
-    tbody tr:nth-child(even) {
-        background: #f5f7ff;
-    }
-
-    tbody tr:hover {
-        background: #e8ecff;
-        transform: scale(1.01);
-    }
-
-    /* Score badges */
-    .score-badge {
-        padding: 6px 14px;
-        border-radius: 20px;
-        color: #fff;
-        font-weight: bold;
-        display: inline-block;
-    }
-
-    .score-low { background: #e74c3c; }
-    .score-mid { background: #f39c12; }
-    .score-high { background: #2ecc71; }
-
-    /* Empty state */
-    .empty-state {
-        text-align: center;
-        padding: 60px;
-        color: #666;
-    }
-
-    .empty-state img {
-        width: 120px;
-        margin-bottom: 15px;
-        opacity: 0.7;
-    }
-
-    .footer-note {
-        text-align: center;
-        font-size: 13px;
-        color: #777;
-        margin-top: 25px;
-    }
-</style>
-
-<div class="container">
-
-    <!-- Header -->
-    <div class="header">
-        <h2>📊 Custom Exam Results</h2>
-    </div>
-
-    <div class="card">
-
-        {% if results|length == 0 %}
-            <div class="empty-state">
-                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076504.png">
-                <p><strong>No custom exam attempts yet.</strong></p>
+            {% if results|length == 0 %}
+            <div class="flex flex-col items-center justify-center py-20 text-center">
+                <div class="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076504.png" class="w-12 h-12 opacity-50"
+                        alt="No Results">
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">No results yet</h3>
+                <p class="text-gray-500 max-w-sm">Students haven't attempted any custom exams yet. Check back later!</p>
             </div>
-        {% else %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>👤 Student</th>
-                        <th>🏆 Score</th>
-                        <th>📘 Total</th>
-                        <th>🕒 Attempted At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in results %}
-                    <tr>
-                        <td>{{ r[0] }}</td>
+            {% else %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Student</th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Exam Name</th>
+                            <th scope="col"
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Score</th>
+                            <th scope="col"
+                                class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Total</th>
+                            <th scope="col"
+                                class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Attempted At</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-100">
+                        {% for r in results %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div
+                                        class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-sm">
+                                        {{ r[0][0] }}
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-bold text-gray-900">{{ r[0] }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-gray-600 font-medium">{{ r[1] }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                {% set percentage = (r[2] / r[3]) if r[3] > 0 else 0 %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                                        {% if percentage >= 0.7 %} bg-green-100 text-green-800
+                                        {% elif percentage >= 0.4 %} bg-yellow-100 text-yellow-800
+                                        {% else %} bg-red-100 text-red-800 {% endif %}">
+                                    {{ r[2] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                {{ r[3] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-400">
+                                {{ r[4] }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
 
-                        <!-- Score badge logic -->
-                        <td>
-                            {% if r[2] / r[3] >= 0.7 %}
-                                <span class="score-badge score-high">{{ r[2] }}</span>
-                            {% elif r[2] / r[3] >= 0.4 %}
-                                <span class="score-badge score-mid">{{ r[2] }}</span>
-                            {% else %}
-                                <span class="score-badge score-low">{{ r[2] }}</span>
-                            {% endif %}
-                        </td>
+        </div>
 
-                        <td>{{ r[3] }}</td>
-                        <td>{{ r[4] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+        <div class="mt-8 text-center text-xs text-gray-400">
+            © 2026 Admin Panel • Custom Exam Evaluation System
+        </div>
 
     </div>
 
-    <div class="footer-note">
-        © Admin Panel • Custom Exam Evaluation System
-    </div>
+</body>
 
-</div>
+</html>

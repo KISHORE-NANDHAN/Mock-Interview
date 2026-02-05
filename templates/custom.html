@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Custom Exams</title>
 
@@ -54,7 +55,7 @@
             background: white;
             padding: 22px;
             border-radius: 18px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
             overflow: hidden;
@@ -72,7 +73,7 @@
 
         .exam-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
         }
 
         .exam-card h3 {
@@ -100,33 +101,34 @@
 
         .start-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(102,126,234,0.4);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <div class="header">
-        <h2>📚 Custom Exams</h2>
-        <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
-    </div>
-
-    <div class="exam-grid">
-        {% for exam in custom_exams %}
-        <div class="exam-card">
-            <h3>{{ exam.name }}</h3>
-            <p>Test your knowledge with this custom exam.</p>
-            <a href="/custom/{{ exam.file }}" class="start-btn">
-                ▶ Start Exam
-            </a>
+        <div class="header">
+            <h2>📚 Custom Exams</h2>
+            <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
         </div>
-        {% endfor %}
-    </div>
 
-</div>
+        <div class="exam-grid">
+            {% for exam in custom_exams %}
+            <div class="exam-card">
+                <h3>{{ exam.name }}</h3>
+                <p>Test your knowledge with this custom exam.</p>
+                <a href="/custom/exam/{{ exam.id }}" class="start-btn">
+                    ▶ Start Exam
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
 
 </body>
+
 </html>

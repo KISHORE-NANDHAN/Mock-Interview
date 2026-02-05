@@ -11,6 +11,7 @@ from flask import Blueprint, render_template, request, redirect, session, url_fo
 
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+from admin_helpers import get_filter_options
 
 # ---------------- DATABASE ----------------
 def get_db():
@@ -56,13 +57,30 @@ def students():
         return redirect("/admin/login")
 
     db = get_db()
-    # Fetch only name, college, branch, year
-    students = db.execute(
-        "SELECT name, college, branch, year FROM users"
-    ).fetchall()
+    
+    # Filters
+    college_filter = request.args.get("college")
+    branch_filter = request.args.get("branch")
+    
+    query = "SELECT name, college, branch, year FROM users WHERE 1=1"
+    params = []
+    
+    if college_filter:
+        query += " AND college = ?"
+        params.append(college_filter)
+        
+    if branch_filter:
+        query += " AND branch = ?"
+        params.append(branch_filter)
+        
+    students = db.execute(query, params).fetchall()
+    
+    # Get filter options
+    colleges, branches = get_filter_options()
+    
     db.close()
 
-    return render_template("admin/students.html", students=students)
+    return render_template("admin/students.html", students=students, colleges=colleges, branches=branches)
 
 
 
@@ -74,13 +92,34 @@ def results():
 
     # Connect to DB and fetch results
     db = get_db()
-    results_data = db.execute("""
+    
+    # Filters
+    college_filter = request.args.get("college")
+    branch_filter = request.args.get("branch")
+    
+    query = """
         SELECT u.name, c.name, r.round_name, s.score
         FROM scores s
         JOIN users u ON s.user_id = u.id
         JOIN companies c ON s.company_id = c.id
         JOIN rounds r ON s.round_id = r.id
-    """).fetchall()
+        WHERE 1=1
+    """
+    params = []
+
+    if college_filter:
+        query += " AND u.college = ?"
+        params.append(college_filter)
+        
+    if branch_filter:
+        query += " AND u.branch = ?"
+        params.append(branch_filter)
+        
+    results_data = db.execute(query, params).fetchall()
+    
+    # Get filter options
+    colleges, branches = get_filter_options()
+    
     db.close()
 
     # Convert to pandas DataFrame for plotting
@@ -119,7 +158,9 @@ def results():
         "admin/results.html",
         results=results_data,
         score_hist_url=url_for('static', filename='plots/score_hist.png'),
-        company_scores_url=url_for('static', filename='plots/company_scores.png')
+        company_scores_url=url_for('static', filename='plots/company_scores.png'),
+        colleges=colleges,
+        branches=branches
     )
 
 # ---------------- CUSTOM EXAM RESULTS PAGE ----------------
@@ -129,7 +170,12 @@ def custom_exam_results():
         return redirect("/admin/login")
 
     db = get_db()
-    results = db.execute("""
+    
+    # Filters
+    college_filter = request.args.get("college")
+    branch_filter = request.args.get("branch")
+    
+    query = """
         SELECT 
             u.name,
             c.exam_name,
@@ -138,13 +184,32 @@ def custom_exam_results():
             c.attempted_at
         FROM custom_exam_scores c
         JOIN users u ON c.user_id = u.id
-        ORDER BY c.attempted_at DESC
-    """).fetchall()
+        WHERE 1=1
+    """
+    params = []
+    
+    if college_filter:
+        query += " AND u.college = ?"
+        params.append(college_filter)
+        
+    if branch_filter:
+        query += " AND u.branch = ?"
+        params.append(branch_filter)
+        
+    query += " ORDER BY c.attempted_at DESC"
+    
+    results = db.execute(query, params).fetchall()
+    
+    # Get filter options
+    colleges, branches = get_filter_options()
+    
     db.close()
 
     return render_template(
         "admin/custom_exam_results.html",
-        results=results
+        results=results,
+        colleges=colleges,
+        branches=branches
     )
 
 
@@ -162,6 +227,9 @@ def exams():
     message = ""
     if request.method == "POST":
         exam_name = request.form["exam_name"].strip()
+        college = request.form["college"].strip()
+        start_time = request.form["start_time"].replace("T", " ")
+        end_time = request.form["end_time"].replace("T", " ")
         file = request.files["json_file"]
 
         if not exam_name or not file:
@@ -171,9 +239,10 @@ def exams():
                 data = json.load(file)
 
                 # Validate JSON format
+                required_keys = {"question", "options", "correct_answer"}
                 for q in data:
-                    if not all(k in q for k in ["question", "options", "correct_answer"]):
-                        raise ValueError("Invalid JSON format.")
+                    if set(q.keys()) != required_keys:
+                        raise ValueError(f"Invalid keys in JSON. Expected exactly {required_keys}, found {set(q.keys())}")
                     if not isinstance(q["options"], dict):
                         raise ValueError("Options must be a dictionary.")
 
@@ -183,6 +252,19 @@ def exams():
                 with open(filepath, "w") as f:
                     json.dump(data, f, indent=4)
 
+                # Save to Database
+                db = get_db()
+                db.execute("""
+                    INSERT INTO custom_exams (exam_name, college, start_time, end_time)
+                    VALUES (?, ?, ?, ?)
+                    ON CONFLICT(exam_name) DO UPDATE SET
+                        college=excluded.college,
+                        start_time=excluded.start_time,
+                        end_time=excluded.end_time
+                """, (exam_name, college, start_time, end_time))
+                db.commit()
+                db.close()
+
                 message = f"Exam '{exam_name}' submitted successfully!"
 
             except Exception as e:
@@ -191,10 +273,14 @@ def exams():
     # Fetch exams from DB
     db = get_db()
     exams_list = db.execute("SELECT * FROM custom_exams").fetchall()
+    
+    # Fetch unique colleges
+    colleges = [row[0] for row in db.execute("SELECT DISTINCT college FROM users WHERE college IS NOT NULL AND college != ''").fetchall()]
     db.close()
 
     return render_template("admin/exams.html",
                            exams=exams_list,
+                           colleges=colleges,
                            message=message)
 
 

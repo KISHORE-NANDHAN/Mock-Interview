@@ -86,7 +86,11 @@ def init_db():
         exam_name TEXT UNIQUE NOT NULL,
         description TEXT,
         difficulty TEXT,
-        exam_type TEXT
+        difficulty TEXT,
+        exam_type TEXT,
+        college TEXT,
+        start_time DATETIME,
+        end_time DATETIME
     )
     """)
 
@@ -114,6 +118,11 @@ def init_db():
         FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     )
     """)
+
+    # ---- SAFE COLUMN UPDATES FOR CUSTOM EXAMS ----
+    add_column_if_missing(cur, "custom_exams", "college", "TEXT")
+    add_column_if_missing(cur, "custom_exams", "start_time", "DATETIME")
+    add_column_if_missing(cur, "custom_exams", "end_time", "DATETIME")
 
     # ---------------- DEFAULT ADMIN ----------------
     cur.execute(

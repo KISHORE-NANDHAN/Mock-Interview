@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, url_for
+import json
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
@@ -9,20 +10,75 @@ UPLOAD_FOLDER = "uploads"
 
 @custom_bp.route("/custom")
 def custom_exams():
-    exams = []
-    for file in os.listdir(UPLOAD_FOLDER):
-        if file.endswith("_custom.json"):
-            exams.append({
-                "name": file.replace("_custom.json", "").replace("_", " ").title(),
-                "file": file
-            })
-    return render_template("custom.html", custom_exams=exams)
-import json
-from flask import Flask, render_template, request, redirect, url_for, session
+    if "user_id" not in session:
+        return redirect("/")
 
-@custom_bp.route("/custom/<filename>")
-def start_exam(filename):
+    db = sqlite3.connect("database.db")
+    cur = db.cursor()
+
+    # Get user college
+    cur.execute("SELECT college FROM users WHERE id=?", (session["user_id"],))
+    row = cur.fetchone()
+    if not row:
+        db.close()
+        return "User not found"
+    
+    user_college = row[0]
+
+    # Filter exams by college and time
+    query = """
+        SELECT id, exam_name 
+        FROM custom_exams 
+        WHERE college = ? 
+        AND datetime('now', 'localtime') BETWEEN start_time AND end_time
+    """
+    exams_data = cur.execute(query, (user_college,)).fetchall()
+    db.close()
+
+    exams = []
+    for eid, name in exams_data:
+        exams.append({
+            "id": eid,
+            "name": name
+        })
+    return render_template("custom.html", custom_exams=exams)
+
+@custom_bp.route("/custom/exam/<int:exam_id>")
+def start_exam(exam_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    db = sqlite3.connect("database.db")
+    cur = db.cursor()
+    
+    # 1. Verify access again (college & time)
+    cur.execute("SELECT college FROM users WHERE id=?", (session["user_id"],))
+    user_row = cur.fetchone()
+    if not user_row:
+        db.close()
+        return redirect("/")
+        
+    user_college = user_row[0]
+
+    query = """
+        SELECT exam_name 
+        FROM custom_exams 
+        WHERE id = ? 
+        AND college = ? 
+        AND datetime('now', 'localtime') BETWEEN start_time AND end_time
+    """
+    exam_row = cur.execute(query, (exam_id, user_college)).fetchone()
+    db.close()
+
+    if not exam_row:
+        return "Exam not found, expired, or you do not have permission."
+
+    exam_name = exam_row[0]
+    filename = f"{exam_name.replace(' ', '_')}_custom.json"
     path = os.path.join(UPLOAD_FOLDER, filename)
+
+    if not os.path.exists(path):
+        return "Exam file not found."
 
     with open(path) as f:
         questions = json.load(f)
@@ -30,8 +86,9 @@ def start_exam(filename):
     session["questions"] = questions
     session["current"] = 0
     session["score"] = 0
+    session["exam_name"] = exam_name
 
-    return redirect(url_for("exam_question"))
+    return redirect(url_for("custom.exam_question"))
 @custom_bp.route("/exam", methods=["GET", "POST"])
 def exam_question():
     questions = session.get("questions")
@@ -48,7 +105,7 @@ def exam_question():
         current += 1
 
         if current >= len(questions):
-            return redirect(url_for("exam_result"))
+            return redirect(url_for("custom.exam_result"))
 
     return render_template(
         "exam.html",

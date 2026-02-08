@@ -150,6 +150,7 @@
         }
 
         let current = 0;
+        window.violationInterval = null;
 
         function showQuestion(index) {
             dbg("Showing question", index);
@@ -160,19 +161,44 @@
             const btn = document.getElementById("nextBtn");
 
             for (let i = 0; i < questions.length; i++) {
-                questions[i].style.display = "none";
+                if (questions[i]) questions[i].style.display = "none";
             }
 
-            questions[index].style.display = "block";
-
-            progressText.innerText = `Question ${index + 1} of ${questions.length}`;
-            progressFill.style.width = ((index + 1) / questions.length) * 100 + "%";
+            if (questions[index]) {
+                questions[index].style.display = "block";
+                progressText.innerText = `Question ${index + 1} of ${questions.length}`;
+                progressFill.style.width = ((index + 1) / questions.length) * 100 + "%";
+            }
 
             if (index === questions.length - 1) {
                 btn.innerText = "Submit Test";
                 dbg("Last question reached");
             } else {
                 btn.innerText = "Next →";
+            }
+        }
+
+        function shutdownProctoring() {
+            dbg("Shutting down proctoring logic...");
+
+            // 1. Clear polling
+            if (window.violationInterval) {
+                clearInterval(window.violationInterval);
+                window.violationInterval = null;
+            }
+
+            // 2. Kill the video feed connection immediately
+            const img = document.querySelector('img[src="/proctor-feed"]');
+            if (img) {
+                img.src = "";
+                img.remove();
+            }
+
+            // 3. Send stop signal (Best effort)
+            try {
+                navigator.sendBeacon("/stop-proctoring");
+            } catch (e) {
+                console.error("Beacon failed", e);
             }
         }
 
@@ -238,40 +264,73 @@
         {% endfor %}
         {% if session.get("exam_mode") == "strict" %}
         <script>
+
             let submitted = false;
             dbg("Violation polling started");
 
+            // ------------------------------------------
+            // 1. VISIBILITY CHECK (Tab Switch/Minimize)
+            // ------------------------------------------
+            function handleVisibilityChange() {
+                if (document.hidden && !submitted) {
+                    dbg("👀 Tab switched or minimized! Auto-submitting.");
+                    triggerAutoSubmit("Tab switch detected!");
+                }
+            }
+            document.addEventListener("visibilitychange", handleVisibilityChange);
+
+            // ------------------------------------------
+            // 2. VIOLATION POLLING
+            // ------------------------------------------
             window.violationInterval = setInterval(() => {
                 if (submitted) return;
 
-                dbg("Polling /check-violation");
+                // dbg("Polling /check-violation"); // Reduce spam
 
                 fetch("/check-violation")
                     .then(res => res.json())
                     .then(data => {
-                        dbg("check-violation response body", data);
-
                         if (data.violation) {
                             dbg("🚨 Violation detected → auto-submitting exam");
-
-                            submitted = true;
-                            clearInterval(window.violationInterval);
-
-                            alert("🚫 Violation detected. Exam auto-submitting.");
-
-                            // Stop proctoring cleanly
-                            shutdownProctoring();
-
-                            // ✅ THIS IS THE FIX
-                            if (document.querySelector("form").requestSubmit) {
-                                document.querySelector("form").requestSubmit();
-                            } else {
-                                document.querySelector("form").submit();
-                            }
+                            triggerAutoSubmit("Proctoring violation detected.");
                         }
                     })
-                    .catch(err => dbg("❌ check-violation failed", err));
+                    .catch(err => console.error("check-violation failed", err));
             }, 2000);
+
+            // ------------------------------------------
+            // HELPER: TRIGGER AUTO SUBMIT
+            // ------------------------------------------
+            function triggerAutoSubmit(reason) {
+                if (submitted) return;
+                submitted = true;
+
+                // UI Feedback
+                const btn = document.getElementById("nextBtn");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerText = `⚠️ ${reason} Submitting...`;
+                    btn.style.background = "#ef4444"; // Red color
+                }
+
+                // Stop polling
+                if (window.violationInterval) clearInterval(window.violationInterval);
+                document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+                // Stop proctoring client-side
+                if (typeof shutdownProctoring === "function") shutdownProctoring();
+
+                // Submit Form
+                dbg(`Auto-submitting due to: ${reason}`);
+
+                // Small delay to allow UI to update if needed, but keep it fast
+                setTimeout(() => {
+                    const form = document.querySelector("form");
+                    // CRITICAL FIX: Disable validation for forced submit
+                    form.noValidate = true;
+                    form.submit();
+                }, 500);
+            }
         </script>
 
         {% endif %}
@@ -282,54 +341,35 @@
         <script>
             const form = document.querySelector("form");
 
-            function shutdownProctoring() {
-                dbg("Shutting down proctoring on client...");
-
-                // 1. Clear polling
-                if (window.violationInterval) {
-                    clearInterval(window.violationInterval);
-                    window.violationInterval = null;
-                }
-
-                // 2. Kill the video feed connection immediately
-                const img = document.querySelector('img[src="/proctor-feed"]');
-                if (img) {
-                    img.src = "";
-                    img.remove();
-                    dbg("Proctor feed image removed");
-                }
-
-                // 3. Send stop signal
-                try {
-                    navigator.sendBeacon("/stop-proctoring");
-                } catch (e) {
-                    dbg("Beacon failed", e);
-                }
-            }
-
+            // Clean submit handler
             form.addEventListener("submit", () => {
-                dbg("Form submitting → stopping proctoring");
-                shutdownProctoring();
-                document.getElementById("nextBtn").disabled = true;
-                document.getElementById("nextBtn").innerText = "Submitting...";
+                dbg("Form submitting → stopping proctoring logic");
+
+                // Use the global helper
+                if (typeof shutdownProctoring === "function") {
+                    shutdownProctoring();
+                } else {
+                    // Fallback
+                    if (window.violationInterval) clearInterval(window.violationInterval);
+                }
+
+                const btn = document.getElementById("nextBtn");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerText = "Submitting...";
+                }
             });
         </script>
-
-
     </form>
     <script>
         document.getElementById("nextBtn").addEventListener("click", function () {
-            dbg("Next/Submit button clicked", { current });
+            // dbg("Next/Submit button clicked", {current});
 
             const questions = document.getElementsByClassName("mcq-question");
 
             if (current === questions.length - 1) {
                 dbg("Manual submit triggered");
-
-                // Note: shutdownProctoring() is called in the submit event listener
-                // so we don't need to call it here to avoid race conditions.
-
-                // Use requestSubmit to trigger the form submit event listener
+                // Trigger form submission
                 if (form.requestSubmit) {
                     form.requestSubmit();
                 } else {

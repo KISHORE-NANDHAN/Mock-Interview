@@ -1,0 +1,130 @@
+{% if session.get("exam_mode") == "strict" %}
+<script>
+    (function () {
+        // Encapsulate to avoid global namespace pollution, 
+        // but expose shutdownProctoring globally for the submit handler.
+
+        let submitted = false;
+
+        function dbg(msg) {
+            console.log(`[PROCTOR] ${msg}`);
+        }
+
+        dbg("Violation polling started");
+
+        // ------------------------------------------
+        // 1. VISIBILITY CHECK (Tab Switch/Minimize)
+        // ------------------------------------------
+        function handleVisibilityChange() {
+            if (document.hidden && !submitted) {
+                dbg("👀 Tab switched or minimized! Auto-submitting.");
+                triggerAutoSubmit("Tab switch detected!");
+            }
+        }
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // ------------------------------------------
+        // 2. VIOLATION POLLING
+        // ------------------------------------------
+        window.violationInterval = setInterval(() => {
+            if (submitted) return;
+
+            fetch("/check-violation")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.violation) {
+                        dbg("🚨 Violation detected → auto-submitting exam");
+                        triggerAutoSubmit("Proctoring violation detected.");
+                    }
+                })
+                .catch(err => console.error("check-violation failed", err));
+        }, 2000);
+
+        // ------------------------------------------
+        // HELPER: TRIGGER AUTO SUBMIT
+        // ------------------------------------------
+        function triggerAutoSubmit(reason) {
+            if (submitted) return;
+            submitted = true;
+
+            // UI Feedback - find any submit button
+            // Try generic selectors often used
+            const btn = document.getElementById("nextBtn") || document.querySelector("button[type='submit']");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = `⚠️ ${reason} Submitting...`;
+                btn.style.background = "#ef4444"; // Red color
+            }
+
+            // Stop polling
+            if (window.violationInterval) clearInterval(window.violationInterval);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+            // Stop proctoring client-side
+            if (typeof window.shutdownProctoring === "function") {
+                window.shutdownProctoring();
+            }
+
+            // Submit Form
+            dbg(`Auto-submitting due to: ${reason}`);
+
+            // Small delay to allow UI to update
+            setTimeout(() => {
+                const form = document.querySelector("form");
+                if (form) {
+                    // CRITICAL FIX: Disable validation for forced submit
+                    form.noValidate = true;
+                    form.submit();
+                } else {
+                    console.error("No form found to submit!");
+                    // Fallback redirect if no form?
+                    window.location.href = "/score";
+                }
+            }, 500);
+        }
+    })();
+</script>
+{% endif %}
+
+<!-- GLOBAL HELPER FOR CLEAN SHUTDOWN (SAFE TO INCLUDE ALWAYS) -->
+<script>
+    // Ensure this is globally available
+    window.shutdownProctoring = function () {
+        console.log("[PROCTOR] Shutting down proctoring logic...");
+
+        // 1. Clear polling
+        if (window.violationInterval) {
+            clearInterval(window.violationInterval);
+            window.violationInterval = null;
+        }
+
+        // 2. Kill the video feed connection immediately
+        const img = document.querySelector('img[src="/proctor-feed"]');
+        if (img) {
+            img.src = "";
+            img.remove();
+        }
+
+        // 3. Send stop signal (Best effort)
+        try {
+            navigator.sendBeacon("/stop-proctoring");
+        } catch (e) {
+            console.error("Beacon failed", e);
+        }
+    };
+
+    // Auto-attach to form submission if form exists
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector("form");
+        if (form) {
+            form.addEventListener("submit", () => {
+                // If it's a manual submit (not our auto-submit), we still want to clean up
+                // But we don't want to interfere with auto-submit's flow
+                console.log("[PROCTOR] Form submitting → stopping proctoring logic");
+                if (typeof window.shutdownProctoring === "function") {
+                    window.shutdownProctoring();
+                }
+            });
+        }
+    });
+</script>

@@ -1,134 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Custom Exams</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Exams | Industrial Portal</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f5f7fa, #e4ecff);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-        }
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-        .container {
-            padding: 40px;
-            max-width: 1200px;
-            margin: auto;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                        }
+                    }
+                }
+            }
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .header h2 {
-            font-size: 28px;
-            color: #333;
-            margin: 0;
-        }
-
-        .back-btn {
-            text-decoration: none;
-            padding: 8px 16px;
-            background: #444;
-            color: #fff;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-
-        .back-btn:hover {
-            background: #222;
-        }
-
-        .exam-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
-        }
-
-        .exam-card {
-            background: white;
-            padding: 22px;
-            border-radius: 18px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .exam-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-
-        .exam-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .exam-card h3 {
-            margin: 15px 0 10px;
-            font-size: 20px;
-            color: #333;
-        }
-
-        .exam-card p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 18px;
-        }
-
-        .start-btn {
-            display: inline-block;
-            padding: 10px 18px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .start-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
-        }
-    </style>
+    </script>
 </head>
 
-<body>
+<body class="font-sans text-slate-800 antialiased bg-slate-50 min-h-screen flex flex-col">
 
     <!-- NAVBAR -->
     {% include 'user_navbar.html' %}
 
-    <div class="container">
+    <div class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <div class="header">
-            <h2>📚 Custom Exams</h2>
-            <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+        <!-- HEADER SECTION -->
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Custom Assessment Library</h1>
+            <p class="text-slate-500 mt-2 text-lg">Access and attempt specialized exams curated for your role.</p>
         </div>
 
-        <div class="exam-grid">
+        {% if custom_exams %}
+        <!-- EXAM GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for exam in custom_exams %}
-            <div class="exam-card">
-                <h3>{{ exam.name }}</h3>
-                <p>Test your knowledge with this custom exam.</p>
-                <a href="/custom/exam/{{ exam.id }}" class="start-btn">
-                    ▶ Start Exam
-                </a>
+            <div
+                class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+
+                <!-- Color Strip -->
+                <div class="h-2 w-full bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                            <i class="fa-solid fa-file-contract text-xl"></i>
+                        </div>
+                        <!-- Optional: Duration or tag could go here -->
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Custom</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {{ exam.name }}
+                    </h3>
+
+                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">
+                        Test your knowledge with this specialized assessment designed to evaluate specific skills.
+                    </p>
+
+                    <a href="/custom/exam/{{ exam.id }}"
+                        class="inline-flex items-center justify-center w-full px-4 py-3 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-md hover:shadow-lg">
+                        <span>Start Assessment</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
             </div>
             {% endfor %}
         </div>
+
+        {% else %}
+        <!-- EMPTY STATE -->
+        <div
+            class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
+            <div class="h-24 w-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                <i class="fa-regular fa-folder-open text-4xl text-slate-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">No Exams Available</h3>
+            <p class="text-slate-500 text-center max-w-md mx-auto px-4">
+                There are currently no custom exams assigned to your profile. Please check back later or contact your
+                administrator.
+            </p>
+            <a href="/companies"
+                class="mt-8 px-6 py-3 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">
+                Browse Company Rounds
+            </a>
+        </div>
+        {% endif %}
 
     </div>
 

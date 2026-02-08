@@ -12,7 +12,7 @@ llm = ChatGroq(
     groq_api_key= os.getenv("GROQ_API_KEY"),
     model_name= os.getenv("GROQ_MODEL_NAME") 
 )
-def generate_mcq_questions(subject_name='multiple programming, sql, aptitude and all', num_mcq=15, difficulty_level='medium'):
+def generate_mcq_questions(subject_name='multiple programming, sql', num_mcq=15, difficulty_level='medium'):
     prompt_template = """
     You are an expert question paper setter.
 
@@ -151,7 +151,7 @@ def generate_coding_questions(skill='general', level='hard'):
         prompt = f"""
         You are a coding examiner.
 
-        Generate EXACTLY 3 Python coding questions.
+        Generate EXACTLY 3 coding questions.
 
         Skill: {skill}
         Difficulty: {level}

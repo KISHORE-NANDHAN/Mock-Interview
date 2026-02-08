@@ -220,24 +220,10 @@
     </div>
 
     <!-------------------------------->
-
-    {% if session.get("exam_mode") == "strict" %}
-    <div style="
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    border: 2px solid red;
-    padding: 5px;
-    background: white;
-    z-index: 9999;
-">
-        <img src="/proctor-feed" width="240" height="180">
-        <div style="color:red; text-align:center; font-weight:bold;">
-            🔴 Proctoring Active
-        </div>
-    </div>
-    {% endif %}
+    <!-- PROCTORING OVERLAY -->
+    {% include 'proctoring_overlay.html' %}
     <!-------------------------------->
+
     <div class="progress-container">
         <div class="progress-text" id="progressText"></div>
         <div class="progress-bar">
@@ -262,78 +248,9 @@
             </div>
         </div>
         {% endfor %}
-        {% if session.get("exam_mode") == "strict" %}
-        <script>
 
-            let submitted = false;
-            dbg("Violation polling started");
-
-            // ------------------------------------------
-            // 1. VISIBILITY CHECK (Tab Switch/Minimize)
-            // ------------------------------------------
-            function handleVisibilityChange() {
-                if (document.hidden && !submitted) {
-                    dbg("👀 Tab switched or minimized! Auto-submitting.");
-                    triggerAutoSubmit("Tab switch detected!");
-                }
-            }
-            document.addEventListener("visibilitychange", handleVisibilityChange);
-
-            // ------------------------------------------
-            // 2. VIOLATION POLLING
-            // ------------------------------------------
-            window.violationInterval = setInterval(() => {
-                if (submitted) return;
-
-                // dbg("Polling /check-violation"); // Reduce spam
-
-                fetch("/check-violation")
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.violation) {
-                            dbg("🚨 Violation detected → auto-submitting exam");
-                            triggerAutoSubmit("Proctoring violation detected.");
-                        }
-                    })
-                    .catch(err => console.error("check-violation failed", err));
-            }, 2000);
-
-            // ------------------------------------------
-            // HELPER: TRIGGER AUTO SUBMIT
-            // ------------------------------------------
-            function triggerAutoSubmit(reason) {
-                if (submitted) return;
-                submitted = true;
-
-                // UI Feedback
-                const btn = document.getElementById("nextBtn");
-                if (btn) {
-                    btn.disabled = true;
-                    btn.innerText = `⚠️ ${reason} Submitting...`;
-                    btn.style.background = "#ef4444"; // Red color
-                }
-
-                // Stop polling
-                if (window.violationInterval) clearInterval(window.violationInterval);
-                document.removeEventListener("visibilitychange", handleVisibilityChange);
-
-                // Stop proctoring client-side
-                if (typeof shutdownProctoring === "function") shutdownProctoring();
-
-                // Submit Form
-                dbg(`Auto-submitting due to: ${reason}`);
-
-                // Small delay to allow UI to update if needed, but keep it fast
-                setTimeout(() => {
-                    const form = document.querySelector("form");
-                    // CRITICAL FIX: Disable validation for forced submit
-                    form.noValidate = true;
-                    form.submit();
-                }, 500);
-            }
-        </script>
-
-        {% endif %}
+        <!-- PROCTORING SCRIPT -->
+        {% include 'proctoring_script.html' %}
 
         <div class="action">
             <button id="nextBtn" type="button">Next →</button>

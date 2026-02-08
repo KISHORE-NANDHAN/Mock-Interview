@@ -1,0 +1,19 @@
+{% if session.get("exam_mode") == "strict" %}
+<div style="
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    border: 2px solid red;
+    padding: 5px;
+    background: white;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+">
+    <img src="/proctor-feed" width="240" height="180" style="border-radius: 4px;">
+    <div
+        style="color:red; text-align:center; font-weight:bold; margin-top: 4px; font-family: sans-serif; font-size: 14px;">
+        🔴 Proctoring Active
+    </div>
+</div>
+{% endif %}

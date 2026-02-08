@@ -55,6 +55,7 @@ def profile():
         SELECT 
             c.name        AS company,
             r.round_name  AS round_name,
+            r.round_type  AS round_type, 
             s.score       AS score
         FROM scores s
         JOIN companies c ON s.company_id = c.id
@@ -63,23 +64,50 @@ def profile():
         ORDER BY s.id DESC
     """, (session["user_id"],)).fetchall()
 
-    # -------- Prepare Chart Data (BACKEND LOGIC) --------
-    chart_labels = []
-    chart_percentages = []
-
+    # -------- Prepare Chart Data (AGGREGATED) --------
+    # User Request: Average scores per round type across all companies
+    
+    aggregation = {}
+    
     for row in scores:
-        round_name = row["round_name"].lower()
+        # Use round_type for grouping (fallback to round_name if type is missing)
+        r_type = row["round_type"] if row["round_type"] else row["round_name"]
+        r_type = r_type.title() # "Mcq" -> "Mcq" (or capitalize properly)
+        
+        # Normalize specific names if needed
+        if r_type.lower() == "mcq": r_type = "MCQ"
+        if r_type.lower() == "hr": r_type = "HR"
+        
         score = row["score"]
-
-        if round_name.startswith("mcq"):
+        
+        # Determine max marks based on type (Logic from previous code)
+        # Note: Ideally this should be in the DB, but keeping existing logic for consistency
+        low_type = r_type.lower()
+        if "mcq" in low_type:
             max_marks = 15
-        elif "coding" in round_name:
+        elif "coding" in low_type:
             max_marks = 30
         else:
             max_marks = 100
+            
+        percent = (score / max_marks) * 100
+        
+        if r_type not in aggregation:
+            aggregation[r_type] = {"total_percent": 0, "count": 0}
+            
+        aggregation[r_type]["total_percent"] += percent
+        aggregation[r_type]["count"] += 1
 
-        chart_labels.append(row["round_name"])
-        chart_percentages.append(round((score / max_marks) * 100, 2))
+    # Convert to lists for Chart.js
+    chart_labels = []
+    chart_percentages = []
+    
+    # Sort for consistent display order? Alphabetical is fine.
+    for r_type in sorted(aggregation.keys()):
+        data = aggregation[r_type]
+        avg = data["total_percent"] / data["count"]
+        chart_labels.append(r_type)
+        chart_percentages.append(round(avg, 2))
 
     db.close()
 

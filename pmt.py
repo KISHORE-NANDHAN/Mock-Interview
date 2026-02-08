@@ -230,7 +230,8 @@ def generate_reasoning_questions():
             return questions
 
         except Exception as e:
-            return e
+            print(f"Error generating reasoning questions: {e}")
+            return []
         
 
 def generate_listening_questions():

@@ -15,7 +15,7 @@ def companies():
         return redirect("/")
 
     db = get_db()
-    companies = db.execute("SELECT id, name FROM companies").fetchall()
+    companies = db.execute("SELECT id, name FROM companies where id!=0").fetchall()
     db.close()
 
     return render_template("companies.html", companies=companies)
@@ -43,3 +43,25 @@ def rounds(company_id):
 @companies_bp.route("/round/<int:round_id>")
 def round_page(round_id):
     return redirect(f"/exam/{round_id}")
+
+
+# ---------------- ALL ROUNDS (GENERIC) ----------------
+@companies_bp.route("/all_rounds")
+def all_rounds():
+    if "user_id" not in session:
+        return redirect("/")
+
+    db = get_db()
+    
+    # Fetch unique rounds (by name) acting as "generic" rounds
+    # We take the first ID found for each unique name to allow starting THAT exam
+    query = """
+        SELECT MIN(id), round_name, round_type
+        FROM rounds 
+        GROUP BY round_name
+        ORDER BY round_name
+    """
+    rounds = db.execute(query).fetchall()
+    db.close()
+
+    return render_template("all_rounds.html", rounds=rounds)

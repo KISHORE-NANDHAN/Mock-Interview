@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Rounds</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen">
+
+    {% include 'user_navbar.html' %}
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="mb-10 text-center md:text-left border-b border-gray-200 pb-6">
+            <h1 class="text-3xl font-bold text-slate-800">Interview Rounds</h1>
+            <p class="text-slate-500 mt-2">Browse unique interview rounds available across all companies.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for r in rounds %}
+            <div
+                class="bg-white rounded-lg border border-gray-200 p-6 flex flex-col justify-between h-full hover:border-indigo-400 transition-colors">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-lg">
+                            {% if "Tech" in r[1] %}
+                            💻
+                            {% elif "HR" in r[1] %}
+                            🤝
+                            {% elif "Commun" in r[1] %}
+                            🗣️
+                            {% else %}
+                            📝
+                            {% endif %}
+                        </div>
+                        <h3 class="font-semibold text-slate-800 text-lg leading-tight">{{ r[1] }}</h3>
+                    </div>
+                </div>
+
+                <a href="/round/{{ r[0] }}" class="mt-4">
+                    <button
+                        class="w-full py-2 px-4 rounded-md bg-slate-800 text-white text-sm font-medium hover:bg-slate-700 transition-colors ring-1 ring-slate-800">
+                        Start Practice
+                    </button>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not rounds %}
+        <div class="text-center py-12 text-slate-400">
+            No rounds available at the moment.
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

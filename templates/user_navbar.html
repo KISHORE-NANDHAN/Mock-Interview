@@ -1,0 +1,43 @@
+<style>
+    /* NAVBAR STYLES */
+    .navbar {
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 18px 30px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar b {
+        font-size: 22px;
+        letter-spacing: 1px;
+        color: white;
+        /* Ensure text matches if surrounding changes */
+    }
+
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .navbar a:hover {
+        color: #93c5fd;
+    }
+</style>
+
+<div class="navbar">
+    <b>Exam & Placement Portal</b>
+    <div>
+        <a href="/companies">Companies</a>
+        <a href="/all_rounds">Rounds</a>
+        <a href="/profile">Profile</a>
+        <a href="/custom">Custom Exams</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>

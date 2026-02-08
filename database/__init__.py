@@ -86,7 +86,6 @@ def init_db():
         exam_name TEXT UNIQUE NOT NULL,
         description TEXT,
         difficulty TEXT,
-        difficulty TEXT,
         exam_type TEXT,
         college TEXT,
         start_time DATETIME,
@@ -179,5 +178,39 @@ def init_db():
             """, (company_id, round_name, get_round_type(round_name)))
 
     conn.commit()
-    conn.close()
     print("✅ Database initialized safely (idempotent & production-ready)")
+
+
+    # ---------------- INSERT GENERIC COMPANY ----------------
+    cur.execute("""
+        INSERT OR IGNORE INTO companies (id, name)
+        VALUES (0, 'Generic')
+    """)
+
+    # ---------------- INSERT COMMON ROUNDS FOR GENERIC ----------------
+    GENERIC_COMPANY_ID = 0
+
+    generic_rounds = [
+        "Reasoning",
+        "Coding",
+        "Technical Interview",
+        "HR Interview",
+        "Communication",
+        "MCQ"
+    ]
+
+    for round_name in generic_rounds:
+        cur.execute("""
+            INSERT OR IGNORE INTO rounds (company_id, round_name, round_type)
+            VALUES (?, ?, ?)
+        """, (
+            GENERIC_COMPANY_ID,
+            round_name,
+            get_round_type(round_name)
+        ))
+
+
+    conn.commit()
+    conn.close()
+
+    print("✅ Generic company (id=0) and common rounds inserted safely")

@@ -1,288 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<title>User Profile & Interview Analytics</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Analytics | Industrial Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-* {
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #e0f2fe, #fce7f3);
-    padding: 40px;
-}
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-}
-
-/* BACK */
-.back-btn {
-    display: inline-block;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #fb7185, #f43f5e);
-    color: white;
-    padding: 10px 18px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 500;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
-}
-
-/* PROFILE */
-.profile-card {
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(12px);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 20px 45px rgba(0,0,0,0.18);
-    display: flex;
-    gap: 30px;
-    margin-bottom: 30px;
-}
-
-.avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 42px;
-    font-weight: bold;
-}
-
-.info h2 {
-    margin-bottom: 10px;
-    color: #0f172a;
-}
-.info p {
-    margin: 6px 0;
-    color: #334155;
-}
-
-/* GRID */
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-/* CARD */
-.card {
-    background: rgba(255,255,255,0.78);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-}
-
-/* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 12px;
-}
-th {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    padding: 12px;
-}
-td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-}
-tr:hover {
-    background: rgba(99,102,241,0.08);
-}
-
-.badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-}
-.good { background: #dcfce7; color: #166534; }
-.avg { background: #fef3c7; color: #92400e; }
-.bad { background: #fee2e2; color: #991b1b; }
-
-/* INSIGHT */
-.insight {
-    margin-top: 15px;
-    padding: 15px;
-    border-left: 5px solid #ef4444;
-    background: #fff7ed;
-    border-radius: 10px;
-    font-weight: 500;
-    color: #7c2d12;
-}
-
-/* RESPONSIVE */
-@media(max-width: 900px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b', // Custom dark slate
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f1f5f9;
+            /* Slate-100 */
+        }
+    </style>
 </head>
 
-<body>
+<body class="font-sans text-slate-800 antialiased bg-slate-50">
 
-<div class="container">
+    {% include 'user_navbar.html' %}
 
-<a href="{{ url_for('companies.companies') }}" class="back-btn">⬅ Back to Companies</a>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-<!-- PROFILE -->
-<div class="profile-card">
-    <div class="avatar">{{ user[1][0]|upper }}</div>
-    <div class="info">
-        <h2>{{ user[1] }}</h2>
-        <p><b>Email:</b> {{ user[2] }}</p>
-        <p><b>College:</b> {{ user[4] }}</p>
+        <!-- HEADER SECTION -->
+        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Candidate Profile</h1>
+                <p class="text-slate-500 mt-1">Detailed performance analytics and interview history</p>
+            </div>
+            <a href="{{ url_for('companies.companies') }}"
+                class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:ring-4 focus:ring-slate-300 transition-colors shadow-lg">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- PROFILE CARD & STATS -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+            <div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
+
+                <!-- Avatar -->
+                <div class="flex-shrink-0">
+                    <div
+                        class="h-32 w-32 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-4xl font-bold text-white shadow-xl ring-4 ring-slate-50">
+                        {{ user['name'][0]|upper }}
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="flex-grow text-center md:text-left space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">{{ user['name'] }}</h2>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                                Candidate
+                            </span>
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                {{ user['college'] }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
+                        <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Email
+                                Address</span>
+                            <div class="text-sm font-medium text-slate-700 truncate" title="{{ user['email'] }}">{{
+                                user['email'] }}
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Total
+                                Rounds</span>
+                            <div class="text-sm font-medium text-slate-700">{{ scores|length }} Attempted</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- LEFT COLUMN: TABLE (Span 7) -->
+            <div class="lg:col-span-7 space-y-8">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="border-b border-slate-100 px-6 py-4 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="font-semibold text-slate-800">Recent Interview Reports</h3>
+                        <span
+                            class="text-xs font-medium text-slate-500 bg-white px-2 py-1 rounded border border-slate-200">Live
+                            Data</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                                    <th class="px-6 py-4">Round Name</th>
+                                    <th class="px-6 py-4 text-center">Score</th>
+                                    <th class="px-6 py-4 text-center">Max</th>
+                                    <th class="px-6 py-4 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                {% for s in scores %}
+                                {% set r = s['round_name']|lower %}
+
+                                {% if r.startswith('mcq') %}
+                                {% set max_marks = 15 %}
+                                {% elif 'coding' in r %}
+                                {% set max_marks = 30 %}
+                                {% else %}
+                                {% set max_marks = 100 %}
+                                {% endif %}
+
+                                {% set percent = (s['score'] / max_marks) * 100 %}
+
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-slate-700">
+                                        {{ s['round_name'] }}
+                                        <div class="text-xs text-slate-400 font-normal mt-0.5">{{ s['company'] }}</div>
+                                        <!-- Accessing Company Name from SQL join -->
+                                    </td>
+                                    <td class="px-6 py-4 text-center font-bold text-slate-800">{{ s['score'] }}</td>
+                                    <td class="px-6 py-4 text-center text-slate-500">{{ max_marks }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        {% if percent < 50 %} <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Needs Work
+                                            </span>
+                                            {% elif percent < 75 %} <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                                Average
+                                                </span>
+                                                {% else %}
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                                    Strong
+                                                </span>
+                                                {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if not scores %}
+                    <div class="px-6 py-10 text-center text-slate-400 italic">
+                        No interview records found. Start a round to see analytics here.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: CHARTS (Span 5) -->
+            <div class="lg:col-span-5 space-y-8">
+
+                <!-- RADAR CHART -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="font-semibold text-slate-800 mb-6">Skill Balance</h3>
+                    <div class="relative w-full aspect-square max-h-[350px] mx-auto">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- BAR CHART -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="font-semibold text-slate-800 mb-6">Performance Trend</h3>
+                    <div class="relative w-full">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Insight Box (Javascript populated) -->
+                <div id="insightBox" class="hidden bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-orange-700" id="insightText"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="grid">
+    <!-- Chart Configuration -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM loaded → Initializing analytics");
 
-<!-- REPORT TABLE -->
-<div class="card">
-    <h3>Interview Reports (Detailed Analysis)</h3>
+            /* --------------------------------------------------
+               1. Chart.js availability check
+            -------------------------------------------------- */
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js not loaded");
+                return;
+            }
 
-    <table>
-        <tr>
-            <th>Round</th>
-            <th>Score</th>
-            <th>Max</th>
-            <th>Level</th>
-        </tr>
+            /* --------------------------------------------------
+               2. Get Data direct from Backend (Clean & Fast)
+            -------------------------------------------------- */
+            // Using |tojson to safely serialize the Python lists
+            const labels = {{ chart_labels | tojson
+        }};
+        const percentages = {{ chart_percentages | tojson }};
 
-        {% for s in scores %}
-        {% set r = s[1]|lower %}
+        console.log("Labels:", labels);
+        console.log("Percentages:", percentages);
 
-        {% if r.startswith('mcq') %}
-            {% set max_marks = 15 %}
-        {% elif 'coding' in r %}
-            {% set max_marks = 30 %}
-        {% else %}
-            {% set max_marks = 100 %}
-        {% endif %}
+        /* --------------------------------------------------
+           3. Safety check (no data)
+        -------------------------------------------------- */
+        if (!labels || labels.length === 0) {
+            console.warn("No data available for charts");
+            // Optional: Show a "No Data" message
+            return;
+        }
 
-        {% set percent = (s[2] / max_marks) * 100 %}
+        /* --------------------------------------------------
+           4. Global Chart Defaults
+        -------------------------------------------------- */
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.scale.grid.color = '#e2e8f0';
 
-        <tr>
-            <td>{{ s[1] }}</td>
-            <td><b>{{ s[2] }}</b></td>
-            <td>{{ max_marks }}</td>
-            <td>
-                {% if percent < 50 %}
-                    <span class="badge bad">Needs Improvement</span>
-                {% elif percent < 75 %}
-                    <span class="badge avg">Average</span>
-                {% else %}
-                    <span class="badge good">Strong</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+        /* --------------------------------------------------
+           5. BAR CHART – Performance Trend
+        -------------------------------------------------- */
+        const barCanvas = document.getElementById('barChart');
 
-<!-- GRAPH 1 -->
-<div class="card">
-    <h3>Round-wise Score Percentage</h3>
-    <canvas id="barChart"></canvas>
-</div>
+        if (barCanvas) {
+            const ctx = barCanvas.getContext('2d');
+            const existing = Chart.getChart(barCanvas);
+            if (existing) existing.destroy();
 
-<!-- GRAPH 2 -->
-<div class="card">
-    <h3>Overall Interview Skill Balance</h3>
-    <canvas id="radarChart"></canvas>
-</div>
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score %',
+                        data: percentages,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 6,
+                        barThickness: 30,
+                        minBarLength: 2
+                    }]
+                },
+                options: {
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInCubic'
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: ctx => `Score: ${ctx.parsed.y}%` }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { callback: value => value + '%' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
 
-</div>
-</div>
+        /* --------------------------------------------------
+           6. RADAR CHART – Skill Balance
+        -------------------------------------------------- */
+        const radarCanvas = document.getElementById('radarChart');
 
-<script>
-const labels = [
-{% for s in scores %}
-"{{ s[1] }}",
-{% endfor %}
-];
+        if (radarCanvas) {
+            const ctx = radarCanvas.getContext('2d');
+            const existing = Chart.getChart(radarCanvas);
+            if (existing) existing.destroy();
 
-const percentages = [
-{% for s in scores %}
-{% set r = s[1]|lower %}
-{% if r.startswith('mcq') %}
-{{ (s[2] / 15 * 100) | round(2) }}
-{% elif 'coding' in r %}
-{{ (s[2] / 30 * 100) | round(2) }}
-{% else %}
-{{ (s[2] / 100 * 100) | round(2) }}
-{% endif %},
-{% endfor %}
-];
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Skill Matrix',
+                        data: percentages,
+                        backgroundColor: 'rgba(59,130,246,0.2)',
+                        borderColor: '#3b82f6',
+                        pointBackgroundColor: '#1e40af',
+                        pointBorderColor: '#ffffff',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    animations: {
+                        duration: 1000,
+                        easing: 'delay'
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: { font: { size: 12, weight: '600' }, color: '#475569' },
+                            ticks: { stepSize: 20, display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
 
-// BAR CHART
-new Chart(document.getElementById('barChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Score %',
-            data: percentages
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 100
+        /* --------------------------------------------------
+           7. INSIGHT GENERATION – Weakest Area
+        -------------------------------------------------- */
+        // We want to find the absolute minimum score, even if it is 0.
+        if (percentages.length > 0) {
+            const minScore = Math.min(...percentages);
+            const index = percentages.indexOf(minScore);
+            const weakRound = labels[index];
+
+            const insightBox = document.getElementById('insightBox');
+            const insightText = document.getElementById('insightText');
+
+            if (insightBox && insightText) {
+                insightText.textContent = `Focus Area: Your lowest performance is in "${weakRound}" (${minScore.toFixed(1)}%). Consider revising this topic.`;
+                insightBox.classList.remove('hidden');
             }
         }
-    }
-});
 
-// RADAR CHART
-new Chart(document.getElementById('radarChart'), {
-    type: 'radar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Performance Balance',
-            data: percentages,
-            backgroundColor: 'rgba(236,72,153,0.3)',
-            borderColor: '#ec4899'
-        }]
-    },
-    options: {
-        scales: {
-            r: {
-                beginAtZero: true,
-                max: 100
-            }
-        }
-    }
-});
-
-// INSIGHT (IGNORE ZERO ATTEMPTS)
-const validScores = percentages.filter(p => p > 0);
-const minScore = Math.min(...validScores);
-const weakRound = labels[percentages.indexOf(minScore)];
-
-const insight = document.createElement('div');
-insight.className = 'insight';
-insight.textContent = `Weakest Round: ${weakRound} (${minScore.toFixed(2)}%)`;
-document.querySelector(".container").appendChild(insight);
-</script>
+        console.log("Charts & insights initialized successfully ✅");
+        });
+    </script>
 
 </body>
+
 </html>
